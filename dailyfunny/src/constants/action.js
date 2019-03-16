@@ -1,0 +1,8 @@
+export const PICTURE_FETCHING = "PICTURE_FETCHING"
+export const PICTURE_FETCHED = "PICTURE_FETCHED";
+
+export const GIF_FETCHED = "GIF_FETCHED"
+export const GIF_FETCHING = "GIF_FETCHING";
+
+export const GAME_FETCHING = "GAME_FETCHING"
+export const GAME_FETCHED = "GAME_FETCHED";
