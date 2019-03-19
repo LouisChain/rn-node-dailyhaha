@@ -1,7 +1,7 @@
 import {PICTURE_FETCHED, PICTURE_FETCHING} from "../constants/action"
 import {getPictures} from "../utils/api"
 
-export function loading() {
+function _fetching() {
   return {
     type: PICTURE_FETCHING,
     isFetching: true
@@ -17,6 +17,7 @@ function _loadPicture(payload) {
 
 export function loadPicture(page) {
   return dispatch => {
+    dispatch(_fetching());
     getPictures(page)
       .then(docs => {
         dispatch(_loadPicture({
@@ -38,7 +39,7 @@ const picture = (state = initialState, action) => {
     case PICTURE_FETCHING:
       return {
         ...state,
-        isFetching: action.isFetching
+        isFetching: true
       }
     case PICTURE_FETCHED:
       // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);

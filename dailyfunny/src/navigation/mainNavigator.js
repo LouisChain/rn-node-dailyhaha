@@ -1,11 +1,12 @@
 import React from "react"
 import {createBottomTabNavigator, createStackNavigator} from "react-navigation";
 import FunnyPictureScreen from "../screens/maintab/funnyPicsScreen";
-import FunnyGamesScreen from "../screens/maintab/funnyGameScreen";
+import FunnyGamesScreen from "../screens/game/funnyGameScreen";
 import FunnyGifsScreen from "../screens/maintab/funnyGifsScreen";
-import {FUNNYGAMES, FUNNYGIFS, FUNNYPICS, MAINTAB} from "../constants/routeConstants";
+import {FUNNYGAMES, FUNNYGIFS, FUNNYPICS, MAINTAB, GAMEPLAYER} from "../constants/routeConstants";
 import Icon from "../components/IconBadge_"
 import {COLORS} from "../styles/styles";
+import GamePlayerScreen from "../screens/game/gamePlayerScreen";
 
 const BottomTabNavigator = createBottomTabNavigator(
   {
@@ -44,10 +45,14 @@ const BottomTabNavigator = createBottomTabNavigator(
   }
 );
 
-const MainNavigator = createStackNavigator({
+const MainNavigator = createStackNavigator(
+  {
     [MAINTAB]: {
       screen: BottomTabNavigator
     },
+    [GAMEPLAYER]: {
+      screen: GamePlayerScreen
+    }
   },
   {
     headerMode: "none",

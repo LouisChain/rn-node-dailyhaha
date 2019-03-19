@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {Dimensions, Image, Text, View, Alert} from "react-native";
+import React, {useEffect, useMemo} from "react";
+import {Alert, Dimensions, Image, Text, View} from "react-native";
 import {connect} from "react-redux";
-import {loading, loadPicture} from "../../action-reducer/picture"
+import {loadPicture} from "../../action-reducer/picture"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/Tags";
+import LoadingView from "../../components/loading/footerLoading"
 
 const {width, height} = Dimensions.get("window");
 
@@ -26,10 +27,6 @@ const layoutProvider = new LayoutProvider(
   }
 );
 
-const renderFooter = () => {
-  // return <FooterLoading containerStyle={{width, height: 54}}/>;
-};
-
 function FunnyPicsScreen(props) {
   // const [page, setPage] = useState(1);
   // const [gifList, setPictureList] = useState(dataProvider);
@@ -39,7 +36,7 @@ function FunnyPicsScreen(props) {
   }, []);
 
   const fetchMore = () => {
-    if (props.pictureList.length > 0)
+    if (props.pictureList.length > 0 && (!props.isFetching))
       props.loadPicture(props.page)
   }
 
@@ -56,6 +53,14 @@ function FunnyPicsScreen(props) {
     );
   }
 
+  const renderFooter = () => {
+    //Second view makes sure we don't unnecessarily change height of the list on this event. That might cause indicator to remain invisible
+    //The empty view can be removed once you've fetched all the data
+    return props.isFetching
+      ? <LoadingView containerStyles={{margin: 10, height: 60}}/>
+      : <View style={{height: 60}}/>;
+  };
+
   const onTagPress = (item) => {
     Alert.alert(item)
   }
@@ -69,7 +74,7 @@ function FunnyPicsScreen(props) {
         layoutProvider={layoutProvider}
         onEndReachedThreshold={0.5}
         onEndReached={() => fetchMore()}
-        // renderFooter={this.renderFooter}
+        renderFooter={renderFooter}
       />
     </View>
   );
@@ -114,7 +119,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loading: () => dispatch(loading()),
     loadPicture: (page) => dispatch(loadPicture(page))
   }
 }

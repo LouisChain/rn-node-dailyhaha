@@ -48,7 +48,7 @@ function FunnyGifScreen(props) {
       <View style={styles.item.container}>
         <Text style={styles.item.text}>{data.caption}</Text>
         <Image
-          source={{uri: data.url}}
+          source={{uri: data.url.replace(".jpg", ".gif")}}
           style={styles.item.image}
         />
         <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
@@ -81,6 +81,7 @@ const styles = {
   },
   item: {
     container: {
+      flex: 1,
       paddingTop: LAYOUT_SPACING.large,
       alignSelf: "flex-start",
       height: "100%"

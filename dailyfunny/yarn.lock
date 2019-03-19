@@ -1768,7 +1768,7 @@ fbjs-scripts@^1.0.0:
     semver "^5.1.0"
     through2 "^2.0.0"
 
-fbjs@^0.8.0, fbjs@^0.8.9:
+fbjs@^0.8.0, fbjs@^0.8.17, fbjs@^0.8.9:
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   dependencies:
@@ -4183,6 +4183,16 @@ react-native-html-parser@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/react-native-html-parser/-/react-native-html-parser-0.0.5.tgz#210a76626b7a472a4b5f5a85cb24b37b10344126"
 
+react-native-image-pan-zoom@^2.1.9:
+  version "2.1.11"
+  resolved "https://registry.yarnpkg.com/react-native-image-pan-zoom/-/react-native-image-pan-zoom-2.1.11.tgz#61bcb69219d95e76a9797d23e4a2e8e0bd654ae9"
+
+react-native-image-zoom-viewer@^2.2.25:
+  version "2.2.25"
+  resolved "https://registry.yarnpkg.com/react-native-image-zoom-viewer/-/react-native-image-zoom-viewer-2.2.25.tgz#61d0978b26d5a07bbbdfe04791818e49d1e538a0"
+  dependencies:
+    react-native-image-pan-zoom "^2.1.9"
+
 react-native-safe-area-view@^0.13.0:
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.13.1.tgz#834bbb6d22f76a7ff07de56725ee5667ba1386b0"
@@ -4206,6 +4216,13 @@ react-native-vector-icons@^6.4.1:
     lodash "^4.0.0"
     prop-types "^15.6.2"
     yargs "^13.2.2"
+
+react-native-webview@^5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-5.3.1.tgz#e9338f4e805c937d77227eb4f01e4713a59c4fe0"
+  dependencies:
+    escape-string-regexp "^1.0.5"
+    fbjs "^0.8.17"
 
 react-native@^0.59.1:
   version "0.59.1"

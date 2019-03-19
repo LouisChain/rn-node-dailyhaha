@@ -1,10 +1,10 @@
 import React, {useEffect} from "react";
-import {Alert, Dimensions, Image, Text, View} from "react-native";
+import {Alert, Dimensions, Image, Text, View, TouchableOpacity} from "react-native";
 import {connect} from "react-redux";
 import {_fetching, fetchGame} from "../../action-reducer/game"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
-import {LAYOUT_SPACING} from "../../styles/styles";
-import Tags from "../../components/Tags";
+import {useNavigation} from "react-navigation-hooks"
+import {GAMEPLAYER} from "../../constants/routeConstants";
 
 const {width, height} = Dimensions.get("window");
 
@@ -12,16 +12,24 @@ const dataProvider = new DataProvider((r1, r2) => {
   return r1.url !== r2.url;
 });
 
+const gridType = "GRID"
+const windowWidth = Math.round(width * 1000) / 1000; // To deal with precision issues on android //Adjustment for margin given to RLV;
+const itemWidth = windowWidth / 2;
+const imageWidth = itemWidth - 8;
+
 const layoutProvider = new LayoutProvider(
   index => {
-    return 0;
+    return gridType;
   },
   (type, dim) => {
     switch (type) {
-      case 0:
-        dim.width = width;
-        dim.height = width + LAYOUT_SPACING.actionBarHeight * 2;
+      case gridType:
+        dim.width = itemWidth;
+        dim.height = itemWidth + 30;
         break;
+      default:
+        dim.width = 0;
+        dim.height = 0;
     }
   }
 );
@@ -43,15 +51,26 @@ function FunnyGameScreen(props) {
       props.fetchGame(props.page)
   }
 
+  const {navigate} = useNavigation();
+  const onOpenDetail = (data) => {
+    navigate(GAMEPLAYER, {gameUrl: data.gameUrl})
+  }
+
   const renderRow = (type, data) => {
+    let tags = "";
+    for (let i = 0; i < data.tags.length; i++) {
+      tags += "#" + data.tags[i] + " "
+    }
     return (
       <View style={styles.item.container}>
-        <Text style={styles.item.text}>{data.caption}</Text>
-        <Image
-          source={{uri: data.url}}
-          style={styles.item.image}
-        />
-        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
+        <Text numberOfLines={1} style={styles.item.text}>{data.caption}</Text>
+        <Text numberOfLines={1} style={styles.item.tags}>{tags}</Text>
+        <TouchableOpacity onPress={() => onOpenDetail(data)}>
+          <Image
+            source={{uri: data.url}}
+            style={styles.item.image}
+          />
+        </TouchableOpacity>
       </View>
     );
   }
@@ -63,13 +82,14 @@ function FunnyGameScreen(props) {
   return (
     <View style={styles.container}>
       <RecyclerListView
+        style={{flex: 1}}
+        contentContainerStyle={{margin: 0}}
         forceNonDeterministicRendering={true}
         rowRenderer={renderRow}
         dataProvider={dataProvider.cloneWithRows(props.gameList)}
         layoutProvider={layoutProvider}
         onEndReachedThreshold={0.5}
         onEndReached={() => fetchMore()}
-        // renderFooter={this.renderFooter}
       />
     </View>
   );
@@ -81,22 +101,21 @@ const styles = {
   },
   item: {
     container: {
-      paddingTop: LAYOUT_SPACING.large,
-      alignSelf: "flex-start",
-      height: "100%"
+      margin: 2
     },
     text: {
       color: "black",
-      fontSize: 32,
+      fontSize: 16,
       fontWeight: "bold",
-      flexDirection: "row",
-      flexWrap: "wrap",
-      paddingLeft: LAYOUT_SPACING.large
+      maxWidth: imageWidth
     },
     image: {
-      width,
-      height: width,
-      resizeMode: "contain"
+      width: imageWidth,
+      height: imageWidth,
+      resizeMode: "contain",
+    },
+    tags: {
+      textDecorationLine: "underline"
     }
   }
 }
