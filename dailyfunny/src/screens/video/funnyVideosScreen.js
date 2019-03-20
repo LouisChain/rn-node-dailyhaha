@@ -8,6 +8,7 @@ import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../../components/loading/footerLoading";
 import {WebView} from "react-native-webview"
+import FooterActions from "../../components/FooterActions"
 
 const {width} = Dimensions.get("window");
 
@@ -27,7 +28,7 @@ const layoutProvider = new LayoutProvider(
     switch (type) {
       case 0:
         dim.width = width;
-        dim.height = 32 + 24 + 30 + imageHeight;
+        dim.height = 32 + 24 + 30 + 16 + 24 + imageHeight;
         break;
     }
   }
@@ -73,20 +74,29 @@ function FunnyVideosScreen(props) {
   }
 
   const onTagPress = (item) => {
-    Alert.alert(item)
+    Alert.alert("Under construction please be patient")
+  }
+
+  const onComment = (data) => {
+    Alert.alert("Under construction please be patient")
+  }
+
+  const onShare = (data) => {
+    Alert.alert("Under construction please be patient")
   }
 
   const renderRow = (type, data) => {
     return (
       <View style={styles.item.container}>
         <Text numberOfLines={1} style={styles.item.text}>{data.caption}</Text>
+        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
         <TouchableOpacity onPress={() => playVideo(data.utubId)}>
           <Image
             source={{uri: data.url}}
             style={styles.item.image}
           />
         </TouchableOpacity>
-        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
+        <FooterActions {...data} onComment={() => onComment(data)} onShare={() => onShare(data)}/>
       </View>
     );
   }
@@ -161,7 +171,8 @@ const styles = {
     backgroundColor: "black"
   },
   item: {
-    container: {},
+    container: {
+    },
     text: {
       color: "lightgray",
       fontSize: FONT_SIZE.veryLarge,

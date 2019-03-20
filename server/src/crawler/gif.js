@@ -31,8 +31,6 @@ const crawlPage2 = async (url) => {
   if (container && container.length > 0) {
     container = $(container).find("a");
 
-    printThread()
-
     let count = await processArrayPicture($, container);
     if (count === container.length - 1) {
       hasItem = true;
@@ -89,10 +87,11 @@ const processArrayPicture = async ($, array) => {
     let views = $(array[i]).find(".views");
     let viewCount = parseInt(views.text());
     let detailPage = prefix + $(array[i]).attr("href");
-    let success = await processItemPicture($, detailPage, image, viewCount)
+    // let success = await processItemPicture($, detailPage, image, viewCount)
+    let success = await processItemPicture2($, detailPage, image, viewCount)
     if (success) count++;
   }
-  return count
+  return count;
 }
 
 const processPicture = ($, image) => {
@@ -128,36 +127,58 @@ const processItemPicture = async ($, detailPage, image, viewCount) => {
   return success;
 }
 
-const printThread = () => {
-  console.log(process.pid);
+const processItemPicture2 = async ($, detailPage, image, viewCount) => {
+  let success = false;
+  let processedPicture = processPicture($, image);
+  let exits = await getExists(processedPicture.url);
+  if (!exits) {
+    let info = {
+      page: detailPage,
+      url: processedPicture.url,
+      caption: processedPicture.caption,
+      views: viewCount,
+    };
+    let gif = {
+      _id: new mongoose.Types.ObjectId(),
+      url: info.url,
+      caption: info.caption,
+      views: info.views,
+    };
+    success = await crawlDetail(gif);
+  } else {
+    console.log("Skip >>> " + processedPicture.url)
+    success = false;
+  }
+  return success;
 }
 
 const crawlDetail = async (info) => {
   let page = info.url.substring(0, info.url.lastIndexOf(".")) + ".htm";
   let hasItem = false;
   try {
-    let reponse = await axios.get(page);
-    let $ = cheerio.load(reponse.data);
+    let response = await axios.get(page);
+    let $ = cheerio.load(response.data);
     let gifUrl = $(".gif-view").find("video").find("source").attr("src");
-    let tags = $(".media-info").find(".dfn").find(".category").find("a");
+    let tagContainer = $(".media-info").find(".dfn").find(".category").find("a");
     if (gifUrl) {
       hasItem = true;
       gifUrl = prefix + gifUrl;
-      let tagsArr = [];
-      if (tags && tags.length > 0) {
-        for (let i = 0; i < tags.length; i++) {
-          tagsArr.push($(tags[i]).text());
+      let tags = [];
+      if (tagContainer && tagContainer.length > 0) {
+        for (let i = 0; i < tagContainer.length; i++) {
+          tags.push($(tagContainer[i]).text());
         }
       }
+      info.tags = tags;
 
-      await Gif.updateOne(info, {$set: {tags: tagsArr, gifUrl}})
-      console.log("Updated >>> " + info.url);
+      await new Gif(info).save();
+      console.log("Inserted >>> " + info.url);
     }
   } catch (e) {
     console.error("Error >>> " + info.url);
   }
 
-  Promise.resolve(hasItem);
+  return Promise.resolve(hasItem);
 }
 
 // const crawlDetailPage = (info) => {
@@ -230,4 +251,16 @@ exports.execute = async () => {
   }
 
   await updateTags();
+}
+
+exports.latest = async () => {
+  for (let i = 1; i < Infinity; i++) {
+    let url = baseGifUrl.replace("{{i}}", i);
+    let result = await crawlPage(url);
+    console.log(i + " page(s) crawled");
+    if (!result) {
+      console.log("Stopped crawling because of detected duplication")
+      break;
+    }
+  }
 }

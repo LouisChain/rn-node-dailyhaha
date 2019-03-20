@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import {useNavigation, useNavigationParam} from "react-navigation-hooks"
-import {Modal, View} from "react-native";
+import {Modal, View, Text} from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
 import FooterLoading from "../../components/loading/footerLoading";
 
@@ -33,6 +33,7 @@ function ZoomPicsScreen() {
           enableImageZoom={true}
           loadingRender={() => <FooterLoading/>}
           renderIndicator={() => null}
+          renderHeader={() => <Text style={{ alignSelf: "center", fontSize: 24, color: "lightgray"}}>{data.caption}</Text>}
           onSwipeDown={() => goBack()}
         />
       </Modal>

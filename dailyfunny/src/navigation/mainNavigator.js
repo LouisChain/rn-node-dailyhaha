@@ -1,6 +1,6 @@
 import React from "react"
 import {createBottomTabNavigator, createStackNavigator} from "react-navigation";
-import Icon from "../components/IconBadge_"
+import Icon from "../components/IconBadge"
 import {COLORS} from "../styles/styles";
 import {FUNNYGAMES, FUNNYGIFS, FUNNYPICS, MAINTAB, GAMEPLAYER, FUNNYVIDEOS, VIDEOPLAYER, PICDETAIL, GIFDETAIL} from "../constants/routeConstants";
 import FunnyPictureScreen from "../screens/pic/funnyPicsScreen";

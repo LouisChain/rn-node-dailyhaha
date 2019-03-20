@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Alert, Dimensions, Image, Text, View, TouchableOpacity} from "react-native";
+import {Alert, Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "react-navigation-hooks"
 import {connect} from "react-redux";
 import {fetchPicture} from "../../action-reducer/gif"
@@ -7,9 +7,10 @@ import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../pic/funnyPicsScreen";
-import {GIFDETAIL, PICDETAIL} from "../../constants/routeConstants";
+import {PICDETAIL} from "../../constants/routeConstants";
+import FooterActions from "../../components/FooterActions";
 
-const {width, height} = Dimensions.get("window");
+const {width} = Dimensions.get("window");
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.url !== r2.url;
@@ -23,7 +24,7 @@ const layoutProvider = new LayoutProvider(
     switch (type) {
       case 0:
         dim.width = width;
-        dim.height = 32 + 12 + 24 + 30 + width;
+        dim.height = 32 + 12 + 24 + 30 + 16 + 24 + width;
         break;
     }
   }
@@ -41,17 +42,30 @@ function FunnyGifScreen(props) {
       props.fetchPicture(props.page)
   }
 
+  const onTagPress = (item) => {
+    Alert.alert("Under construction please be patient")
+  }
+
+  const onComment = (data) => {
+    Alert.alert("Under construction please be patient")
+  }
+
+  const onShare = (data) => {
+    Alert.alert("Under construction please be patient")
+  }
+
   const renderRow = (type, data) => {
     return (
       <View style={styles.item.container}>
-        <Text style={styles.item.text}>{data.caption}</Text>
+        <Text numberOfLines={1} style={styles.item.text}>{data.caption}</Text>
+        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
         <TouchableOpacity onPress={() => navigate(PICDETAIL, {data, gif: true})}>
           <Image
             source={{uri: data.url.replace(".jpg", ".gif")}}
             style={styles.item.image}
           />
         </TouchableOpacity>
-        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
+        <FooterActions {...data} onComment={() => onComment(data)} onShare={() => onShare(data)}/>
       </View>
     );
   }
@@ -63,10 +77,6 @@ function FunnyGifScreen(props) {
       ? <LoadingView containerStyles={{margin: 10, height: 60}}/>
       : <View style={{height: 60}}/>;
   };
-
-  const onTagPress = (item) => {
-    Alert.alert(item)
-  }
 
   return (
     <View style={styles.container}>
@@ -89,13 +99,13 @@ const styles = {
   },
   item: {
     container: {
+      paddingTop: LAYOUT_SPACING.normal
     },
     text: {
       color: "black",
       fontSize: FONT_SIZE.veryLarge,
       fontWeight: "bold",
       paddingHorizontal: LAYOUT_SPACING.normal,
-      paddingBottom: LAYOUT_SPACING.normal
     },
     image: {
       width,

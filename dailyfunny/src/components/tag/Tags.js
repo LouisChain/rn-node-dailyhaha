@@ -7,7 +7,7 @@ import Button from "./Button";
 function Tags(props) {
   const {tags} = props;
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.containerStyle]}>
       {
         tags.map((item, index) =>
           {

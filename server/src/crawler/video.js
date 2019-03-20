@@ -39,7 +39,7 @@ const crawlPage = (url) => {
             container = $(container).find("a");
 
             let count = await processArrayPicture($, container);
-            if (count === container.length) {
+            if (count >= container.length) {
               hasItem = true;
             } else {
               hasItem = false;
@@ -86,7 +86,7 @@ const processItemPicture = async ($, detailPage, image, viewCount) => {
       views: viewCount,
     }
     success = await crawlDetailPage(info);
-    success = true;
+    // success = true;
   } else {
     console.log("Skip >>> " + detailPage)
     success = false;
@@ -150,7 +150,18 @@ const crawlDetailPage = (info) => {
 }
 
 exports.execute = async () => {
-  for (let i = 24; i < Infinity; i++) {
+  for (let i = 1; i < Infinity; i++) {
+    let url = baseVideoUrl.replace("{{i}}", i);
+    let result = await crawlPage(url);
+    console.log(i + " page(s) crawled");
+    if (!result) {
+      break;
+    }
+  }
+}
+
+exports.latest = async () => {
+  for (let i = 1; i < Infinity; i++) {
     let url = baseVideoUrl.replace("{{i}}", i);
     let result = await crawlPage(url);
     console.log(i + " page(s) crawled");

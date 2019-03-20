@@ -8,6 +8,7 @@ import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../../components/loading/footerLoading"
 import {PICDETAIL} from "../../constants/routeConstants";
+import FooterActions from "../../components/FooterActions"
 
 const {width} = Dimensions.get("window");
 
@@ -25,7 +26,7 @@ const layoutProvider = new LayoutProvider(
     switch (type) {
       case 0:
         dim.width = width;
-        dim.height = 32 + 12 + 24 + 30 + imageHeight;
+        dim.height = 12 + 32 + 24 + 30 + 16 + 24 + imageHeight;
         break;
     }
   }
@@ -44,20 +45,29 @@ function FunnyPicsScreen(props) {
   }
 
   const onTagPress = (item) => {
-    Alert.alert(item)
+    Alert.alert("Under construction please be patient")
+  }
+
+  const onComment = (data) => {
+    Alert.alert("Under construction please be patient")
+  }
+
+  const onShare = (data) => {
+    Alert.alert("Under construction please be patient")
   }
 
   const renderRow = (type, data) => {
     return (
       <View style={styles.item.container}>
-        <Text style={styles.item.text}>{data.caption}</Text>
+        <Text numberOfLines={1} style={styles.item.text}>{data.caption}</Text>
+        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
         <TouchableOpacity onPress={() => navigate(PICDETAIL, {data})}>
           <Image
             source={{uri: data.url}}
             style={styles.item.image}
           />
         </TouchableOpacity>
-        <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
+        <FooterActions {...data} onComment={() => onComment(data)} onShare={() => onShare(data)}/>
       </View>
     );
   }
@@ -90,7 +100,9 @@ const styles = {
     flex: 1
   },
   item: {
-    container: {},
+    container: {
+      paddingTop: LAYOUT_SPACING.normal
+    },
     text: {
       color: "black",
       fontSize: FONT_SIZE.veryLarge,
@@ -98,7 +110,6 @@ const styles = {
       flexDirection: "row",
       flexWrap: "wrap",
       paddingHorizontal: LAYOUT_SPACING.normal,
-      paddingBottom: LAYOUT_SPACING.normal
     },
     image: {
       width,
