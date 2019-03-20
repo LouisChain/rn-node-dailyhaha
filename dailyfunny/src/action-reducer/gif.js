@@ -1,7 +1,7 @@
 import {GIF_FETCHED, GIF_FETCHING} from "../constants/action"
 import {getGifs} from "../utils/api"
 
-export function _fetching() {
+function _fetching() {
   return {
     type: GIF_FETCHING,
     isFetching: true
@@ -17,6 +17,7 @@ function _fetchPicture(payload) {
 
 export function fetchPicture(page) {
   return dispatch => {
+    dispatch(_fetching());
     getGifs(page)
       .then(docs => {
         dispatch(_fetchPicture({

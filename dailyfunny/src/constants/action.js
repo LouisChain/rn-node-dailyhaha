@@ -6,3 +6,6 @@ export const GIF_FETCHING = "GIF_FETCHING";
 
 export const GAME_FETCHING = "GAME_FETCHING"
 export const GAME_FETCHED = "GAME_FETCHED";
+
+export const VIDEO_FETCHING = "VIDEO_FETCHING"
+export const VIDEO_FETCHED = "VIDEO_FETCHED";

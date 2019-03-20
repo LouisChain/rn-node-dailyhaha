@@ -34,5 +34,12 @@ const getGames = (page = 1, limit = defaultPagination) => {
   });
 };
 
+const getVideos = (page = 1, limit = defaultPagination) => {
+  return instance.post("/video/all", {
+    page,
+    limit
+  });
+};
 
-export {fbLogin, getPictures, getGifs, getGames};
+
+export {fbLogin, getPictures, getGifs, getGames, getVideos};

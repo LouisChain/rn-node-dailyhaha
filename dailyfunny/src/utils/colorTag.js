@@ -1,0 +1,60 @@
+export const getColor = (name) => {
+  switch (name) {
+    case "fail":
+      return "red"
+    case "weird":
+      return "green";
+    case "celebrity":
+      return "blue";
+    case "cool":
+      return "bisque";
+    case "gross":
+      return "blueviolet"
+    case "cartoons":
+      return "orange";
+    case "signs":
+      return "navy";
+    case "costumes":
+      return "yellowgreen";
+    case "illusions":
+      return "violet"
+    case "cant_park_there":
+      return "tomato"
+    case "puzzle":
+      return "teal";
+    case "racing":
+      return "tan";
+    case "sports":
+      return "slateblue";
+    case "strategy":
+      return "salmon";
+    case "zombie":
+      return "sandybrown"
+    case "defense":
+      return "purple"
+    case "shooting":
+      return "mediumvioletred"
+    case "war":
+      return "maroon"
+    case "arcade":
+      return "lightseagreen";
+    case "pranks":
+      return "crimson";
+    case "dogs":
+      return "chocolate"
+    case "cats":
+      return "darkcyan"
+    case "cartoon":
+      return "darkorchid"
+    case "comedians":
+      return "darkslateblue"
+    case "magic":
+      return "firebrick"
+    case "extreme":
+      return "forestgreen"
+    case "commercials":
+      return "darkturquoise";
+    default:
+      return "deeppink"
+  }
+}

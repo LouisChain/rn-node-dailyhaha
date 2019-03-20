@@ -5,7 +5,7 @@ const videoScheme = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   url: {type: String, index: true},// image preview url
   caption: {type: String, required: false},
-  blobUrl: {type: String, index: true},
+  utubId: {type: String},
   tags: {type: Array, required: false},
   user: {type: mongoose.Schema.Types.ObjectId, required: false},//belong to this user
   comment: {type: Array, required: false},// content of comments

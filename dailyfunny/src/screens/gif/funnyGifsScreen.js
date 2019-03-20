@@ -1,11 +1,13 @@
-import React, {useEffect, useMemo} from "react";
-import {Alert, Dimensions, Image, Text, View} from "react-native";
+import React, {useEffect} from "react";
+import {Alert, Dimensions, Image, Text, View, TouchableOpacity} from "react-native";
+import {useNavigation} from "react-navigation-hooks"
 import {connect} from "react-redux";
-import {loadPicture} from "../../action-reducer/picture"
+import {fetchPicture} from "../../action-reducer/gif"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
-import {LAYOUT_SPACING} from "../../styles/styles";
-import Tags from "../../components/Tags";
-import LoadingView from "../../components/loading/footerLoading"
+import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
+import Tags from "../../components/tag/Tags";
+import LoadingView from "../pic/funnyPicsScreen";
+import {GIFDETAIL, PICDETAIL} from "../../constants/routeConstants";
 
 const {width, height} = Dimensions.get("window");
 
@@ -21,33 +23,34 @@ const layoutProvider = new LayoutProvider(
     switch (type) {
       case 0:
         dim.width = width;
-        dim.height = width + LAYOUT_SPACING.actionBarHeight * 2;
+        dim.height = 32 + 12 + 24 + 30 + width;
         break;
     }
   }
 );
 
-function FunnyPicsScreen(props) {
-  // const [page, setPage] = useState(1);
-  // const [gifList, setPictureList] = useState(dataProvider);
+function FunnyGifScreen(props) {
+  const {navigate} = useNavigation();
 
   useEffect(() => {
-    props.loadPicture(props.page)
+    props.fetchPicture(props.page)
   }, []);
 
   const fetchMore = () => {
-    if (props.pictureList.length > 0 && (!props.isFetching))
-      props.loadPicture(props.page)
+    if (props.gifList.length > 0 && !props.isFetching)
+      props.fetchPicture(props.page)
   }
 
   const renderRow = (type, data) => {
     return (
       <View style={styles.item.container}>
         <Text style={styles.item.text}>{data.caption}</Text>
-        <Image
-          source={{uri: data.url}}
-          style={styles.item.image}
-        />
+        <TouchableOpacity onPress={() => navigate(PICDETAIL, {data, gif: true})}>
+          <Image
+            source={{uri: data.url.replace(".jpg", ".gif")}}
+            style={styles.item.image}
+          />
+        </TouchableOpacity>
         <Tags tags={data.tags} onTagPress={(item) => onTagPress(item)}/>
       </View>
     );
@@ -70,7 +73,7 @@ function FunnyPicsScreen(props) {
       <RecyclerListView
         forceNonDeterministicRendering={true}
         rowRenderer={renderRow}
-        dataProvider={dataProvider.cloneWithRows(props.pictureList)}
+        dataProvider={dataProvider.cloneWithRows(props.gifList)}
         layoutProvider={layoutProvider}
         onEndReachedThreshold={0.5}
         onEndReached={() => fetchMore()}
@@ -86,17 +89,13 @@ const styles = {
   },
   item: {
     container: {
-      paddingTop: LAYOUT_SPACING.large,
-      alignSelf: "flex-start",
-      height: "100%"
     },
     text: {
       color: "black",
-      fontSize: 32,
+      fontSize: FONT_SIZE.veryLarge,
       fontWeight: "bold",
-      flexDirection: "row",
-      flexWrap: "wrap",
-      paddingLeft: LAYOUT_SPACING.large
+      paddingHorizontal: LAYOUT_SPACING.normal,
+      paddingBottom: LAYOUT_SPACING.normal
     },
     image: {
       width,
@@ -107,20 +106,20 @@ const styles = {
 }
 
 function mapStateToProps(state) {
-  const {picture} = state;
-  const {isFetching, error, pictureList, page} = picture;
+  const {gif} = state;
+  const {isFetching, error, gifList, page} = gif;
   return {
     isFetching,
     error,
     page,
-    pictureList
+    gifList
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadPicture: (page) => dispatch(loadPicture(page))
+    fetchPicture: (page) => dispatch(fetchPicture(page))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FunnyPicsScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(FunnyGifScreen)

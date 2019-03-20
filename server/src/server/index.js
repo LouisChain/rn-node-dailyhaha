@@ -12,6 +12,7 @@ mongoose.set('useCreateIndex', true)
 const pictureRoutes = require("./picture/routes");
 const gifRoutes = require("./gif/routes");
 const gameRoutes = require("./game/routes");
+const videoRoutes = require("./video/routes");
 
 // Middlewares
 // parse application/x-www-form-urlencoded
@@ -23,6 +24,7 @@ app.use(bodyParser.json())
 app.use("/picture", pictureRoutes);
 app.use("/gif", gifRoutes);
 app.use("/game", gameRoutes);
+app.use("/video", videoRoutes);
 
 // Error handling
 app.use((req, res, next) => {

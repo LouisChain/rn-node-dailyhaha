@@ -36,7 +36,8 @@ export const FONT_SIZE = {
   normal: 12,
   large: 16,
   xlarge: 18,
-  xxlarge: 22
+  xxlarge: 22,
+  veryLarge: 32
 };
 
 export const FONTS = {

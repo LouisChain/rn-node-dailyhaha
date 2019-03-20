@@ -1,5 +1,5 @@
 import {Alert, Image, Text, View} from "react-native";
-import Tags from "../screens/maintab/funnyPicsScreen";
+import Tags from "../screens/pic/funnyPicsScreen";
 import React from "react";
 import {LAYOUT_SPACING} from "../styles/styles";
 

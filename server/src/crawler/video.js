@@ -30,7 +30,7 @@ const crawlPage = (url) => {
           console.log(err)
           reject(err + "");
         } else {
-          console.log(`response >>> ${url}`);
+          console.log(`Response >>> ${url}`);
 
           // retrieve contents
           let $ = res.$;
@@ -39,7 +39,7 @@ const crawlPage = (url) => {
             container = $(container).find("a");
 
             let count = await processArrayPicture($, container);
-            if (count === container.length - 1) {
+            if (count === container.length) {
               hasItem = true;
             } else {
               hasItem = false;
@@ -78,26 +78,26 @@ const processItemPicture = async ($, detailPage, image, viewCount) => {
   let success = false;
   let processedPicture = processPicture($, image);
   let exits = await getExists(processedPicture.url);
-  if (!exits || exits.length === 0) {
+  if (!exits) {
     let info = {
       page: detailPage,
       url: processedPicture.url,
       caption: processedPicture.caption,
       views: viewCount,
     }
-    let detailCrawler = new Crawler({
-      rateLimit: 1000
-    })
-    await crawlDetailPage(info, detailCrawler)
-    success = true;// in case item was not in the db but crawl false, so counter will be broken
+    success = await crawlDetailPage(info);
+    success = true;
   } else {
-    console.log("Skip >>> " + info.url)
+    console.log("Skip >>> " + detailPage)
     success = false;
   }
   return success;
 }
 
-const crawlDetailPage = (info, detailCrawler) => {
+const crawlDetailPage = (info) => {
+  let detailCrawler = new Crawler({
+    rateLimit: 1000
+  })
   return new Promise((resolve, reject) => {
     detailCrawler.queue({
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36',
@@ -108,36 +108,38 @@ const crawlDetailPage = (info, detailCrawler) => {
           console.log(err)
           reject(err + "");
         } else {
-          console.log(`detail >>> ${info.url}`);
+          console.log(`Detail >>> ${info.page}`);
 
           // retrieve contents
           let $ = res.$;
-          console.log($("body").contents())
-          let container = $("#my-video_Youtube_api");
-          let video = container.getElementsByTagName("video");
-          if (video && video.length > 0) {
-            console.log("video found")
-            hasItem = true;
-            let src = video[0].src;
-            // get tags
-            let tagsContainer = $(".media-info").find(".category").find("a");
-            let tags = [];
-            if (tagsContainer && tagsContainer.length > 0) {
-              for (let i = 0; i < tagsContainer.length; i++) {
-                tags.push($(tagsContainer[i]).text());
+          let frame = $("#my-video").attr("data-setup");
+          if (frame && frame.length > 0) {
+            let hasYoutube = frame.indexOf("watch?v=");
+            if (hasYoutube !== -1) {
+              hasItem = true;
+              let src = frame.substring(hasYoutube + 8);
+              let utubId = src.substring(0, src.indexOf(`"}]`));
+
+              // get tags
+              let tagsContainer = $(".media-info").find(".dfn").find(".category").find("a");
+              let tags = [];
+              if (tagsContainer && tagsContainer.length > 0) {
+                for (let i = 0; i < tagsContainer.length; i++) {
+                  tags.push($(tagsContainer[i]).text());
+                }
               }
+              // save to db
+              let videoObject = new Video({
+                _id: new mongoose.Types.ObjectId(),
+                url: info.url,
+                caption: info.caption,
+                views: info.views,
+                tags,
+                utubId
+              });
+              await videoObject.save();
+              console.log("Inserted => " + utubId);
             }
-            // save to db
-            let videoObject = new Video({
-              _id: new mongoose.Types.ObjectId(),
-              url: info.url,
-              caption: info.caption,
-              blobUrl: src,
-              views: info.views,
-              tags: tags
-            });
-            await videoObject.save();
-            console.log("inserted => " + src)
           }
         }
         resolve(hasItem);
@@ -148,10 +150,10 @@ const crawlDetailPage = (info, detailCrawler) => {
 }
 
 exports.execute = async () => {
-  for (let i = 1; i < Infinity; i++) {
+  for (let i = 24; i < Infinity; i++) {
     let url = baseVideoUrl.replace("{{i}}", i);
     let result = await crawlPage(url);
-    console.log("Crawl page: " + url);
+    console.log(i + " page(s) crawled");
     if (!result) {
       break;
     }

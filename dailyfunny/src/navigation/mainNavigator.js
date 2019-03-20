@@ -1,12 +1,17 @@
 import React from "react"
 import {createBottomTabNavigator, createStackNavigator} from "react-navigation";
-import FunnyPictureScreen from "../screens/maintab/funnyPicsScreen";
-import FunnyGamesScreen from "../screens/game/funnyGameScreen";
-import FunnyGifsScreen from "../screens/maintab/funnyGifsScreen";
-import {FUNNYGAMES, FUNNYGIFS, FUNNYPICS, MAINTAB, GAMEPLAYER} from "../constants/routeConstants";
 import Icon from "../components/IconBadge_"
 import {COLORS} from "../styles/styles";
+import {FUNNYGAMES, FUNNYGIFS, FUNNYPICS, MAINTAB, GAMEPLAYER, FUNNYVIDEOS, VIDEOPLAYER, PICDETAIL, GIFDETAIL} from "../constants/routeConstants";
+import FunnyPictureScreen from "../screens/pic/funnyPicsScreen";
+import FunnyGamesScreen from "../screens/game/funnyGameScreen";
+import FunnyGifsScreen from "../screens/gif/funnyGifsScreen";
+import FunnyVideosScreen from "../screens/video/funnyVideosScreen";
 import GamePlayerScreen from "../screens/game/gamePlayerScreen";
+import VideoPlayerScreen from "../screens/video/videoPlayer"
+import PicDetailScreen from "../screens/pic/zoomPicsScreen";
+import GifPlayerScreen from "../screens/gif/gifPlayerScreen"
+
 
 const BottomTabNavigator = createBottomTabNavigator(
   {
@@ -16,13 +21,16 @@ const BottomTabNavigator = createBottomTabNavigator(
     [FUNNYGIFS]: {
       screen: FunnyGifsScreen
     },
+    [FUNNYVIDEOS]: {
+      screen: FunnyVideosScreen
+    },
     [FUNNYGAMES]: {
       screen: FunnyGamesScreen
     }
   },
   {
     defaultNavigationOptions: ({navigation}) => ({
-      title: navigation.state.routeName === FUNNYPICS ? "PICTURES" : navigation.state.routeName === FUNNYGIFS ? "GIFS" : "GAMES",
+      title: navigation.state.routeName === FUNNYPICS ? "PICTURES" : navigation.state.routeName === FUNNYGIFS ? "GIFS" : navigation.state.routeName === FUNNYVIDEOS ? "VIDEOS" :"GAMES",
       tabBarIcon: ({focused, horizontal, tintColor}) => {
         const {routeName} = navigation.state;
         let iconName;
@@ -32,7 +40,10 @@ const BottomTabNavigator = createBottomTabNavigator(
           iconName = `card-giftcard`;
         } else if (routeName === FUNNYGAMES) {
           iconName = `games`;
+        }else if (routeName === FUNNYVIDEOS) {
+          iconName = `ondemand-video`;
         }
+
         return <Icon name={iconName} color={tintColor}/>;
       },
     }),
@@ -52,6 +63,15 @@ const MainNavigator = createStackNavigator(
     },
     [GAMEPLAYER]: {
       screen: GamePlayerScreen
+    },
+    [VIDEOPLAYER]: {
+      screen: VideoPlayerScreen
+    },
+    [PICDETAIL]: {
+      screen: PicDetailScreen
+    },
+    [GIFDETAIL]: {
+      screen: GifPlayerScreen
     }
   },
   {
