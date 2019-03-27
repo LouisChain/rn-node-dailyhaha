@@ -25,10 +25,12 @@ const latest = async () => {
   console.log("Updating Videos");
   await Video.latest();
 
-  // process.exit()
+  process.exit()
 }
 
 
-const job = schedule.scheduleJob('* */4 * * *', function(){// Every 4 hour when minute = 0;
-  latest();
-});
+// const job = schedule.scheduleJob('* */4 * * *', function(){// Every 4 hour when minute = 0;
+//   latest();
+// });
+
+latest();

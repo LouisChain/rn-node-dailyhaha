@@ -1,5 +1,5 @@
 export const getColor = (name) => {
-  switch (name) {
+  switch (name.toLowerCase()) {
     case "fail":
       return "red"
     case "weird":
@@ -7,7 +7,7 @@ export const getColor = (name) => {
     case "celebrity":
       return "blue";
     case "cool":
-      return "bisque";
+      return "rosybrown";
     case "gross":
       return "blueviolet"
     case "cartoons":
@@ -54,6 +54,10 @@ export const getColor = (name) => {
       return "forestgreen"
     case "commercials":
       return "darkturquoise";
+    case "funny":
+      return "olive";
+    case "animals":
+      return "steelblue";
     default:
       return "deeppink"
   }

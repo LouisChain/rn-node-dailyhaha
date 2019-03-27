@@ -2,13 +2,14 @@ import React, {useEffect, useRef, useState} from "react";
 import {Alert, Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
 import {useNavigation} from "react-navigation-hooks";
-import {fetchVideo} from "../../action-reducer/video_"
+import {fetchVideo, searchPicture} from "../../action-reducer/video"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../../components/loading/footerLoading";
 import {WebView} from "react-native-webview"
 import FooterActions from "../../components/FooterActions"
+import SearchPanel from "../../components/SearchPanel";
 
 const {width} = Dimensions.get("window");
 
@@ -74,7 +75,7 @@ function FunnyVideosScreen(props) {
   }
 
   const onTagPress = (item) => {
-    Alert.alert("Under construction please be patient")
+    props.onSearchTag(1, null, [item]);
   }
 
   const onComment = (data) => {
@@ -161,6 +162,10 @@ function FunnyVideosScreen(props) {
         onEndReached={() => fetchMore()}
         renderFooter={renderFooter}
       />
+      <SearchPanel
+        tags={["Animals", "Cool", "Commercials", "Cartoons", "Extreme", "Magic", "Comedians"]}
+        table={"video"}
+      />
     </View>
   );
 }
@@ -194,7 +199,7 @@ const styles = {
   },
   youtube: {
     position: "absolute",
-    top: 0,
+    top: LAYOUT_SPACING.actionBarHeight,
     width,
     height: webViewHeight
     // alignSelf: 'stretch',
@@ -219,7 +224,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    fetchVideo: (page) => dispatch(fetchVideo(page))
+    fetchVideo: (page) => dispatch(fetchVideo(page)),
+    onSearchTag: (page, e, tags) => dispatch(searchPicture(page, e, tags)),
   }
 }
 

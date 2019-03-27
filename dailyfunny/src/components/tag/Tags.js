@@ -7,10 +7,13 @@ import Button from "./Button";
 function Tags(props) {
   const {tags} = props;
   return (
-    <View style={[styles.container, props.containerStyle]}>
+    <View
+      onLayout={(event) => {
+        let {x, y, width, height} = event.nativeEvent.layout;
+      }}
+      style={[styles.container, props.containerStyle]}>
       {
-        tags.map((item, index) =>
-          {
+        tags.map((item, index) => {
             let tagColor = getColor(item);
             let normalColor = "transparent"
             let normal = {
@@ -29,6 +32,7 @@ function Tags(props) {
                 paddingHorizontal: LAYOUT_SPACING.small,
                 marginRight: LAYOUT_SPACING.large,
                 height: 30,
+                marginBottom: LAYOUT_SPACING.xsmall
               }
             };
             let pressed = {
@@ -38,6 +42,7 @@ function Tags(props) {
               },
               button: {
                 backgroundColor: tagColor,
+                borderWidth: 1,
                 borderRadius: 16,
                 flexDirection: "row",
                 justifyContent: "center",
@@ -45,6 +50,7 @@ function Tags(props) {
                 paddingHorizontal: LAYOUT_SPACING.small,
                 marginRight: LAYOUT_SPACING.large,
                 height: 30,
+                marginBottom: LAYOUT_SPACING.xsmall
               }
             }
             return <Button key={index}
@@ -63,8 +69,8 @@ const styles = {
   container: {
     padding: LAYOUT_SPACING.normal,
     flexDirection: "row",
-    justifyContent: "flex-start"
-
+    justifyContent: "flex-start",
+    flexWrap: "wrap"
   }
 }
 

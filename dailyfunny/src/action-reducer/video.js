@@ -1,28 +1,28 @@
-import {PICTURE_FETCHED, PICTURE_FETCHING, PICTURE_SEARCH_RESULT} from "../constants/action"
+import {VIDEO_FETCHED, VIDEO_FETCHING, VIDEO_SEARCH_RESULT} from "../constants/action"
 import {query, search} from "../utils/api"
 
 function _fetching() {
   return {
-    type: PICTURE_FETCHING,
+    type: VIDEO_FETCHING,
     isFetching: true
   }
 }
 
-function _loadPicture(payload) {
+function _fetchVideo(payload) {
   return {
-    type: PICTURE_FETCHED,
-    pictureList: payload.pictureList,
+    type: VIDEO_FETCHED,
+    videoList: payload.videoList,
     nextPage: payload.nextPage
   }
 }
 
-export function loadPicture(page) {
+export function fetchVideo(page) {
   return dispatch => {
     dispatch(_fetching());
-    query(page, "picture")
+    query(page, "video")
       .then(docs => {
-        dispatch(_loadPicture({
-          pictureList: docs.data.data,
+        dispatch(_fetchVideo({
+          videoList: docs.data.data,
           nextPage: page + 1
         }))
       })
@@ -31,8 +31,8 @@ export function loadPicture(page) {
 
 function _loadSearchResult(payload) {
   return {
-    type: PICTURE_SEARCH_RESULT,
-    pictureList: payload.pictureList
+    type: VIDEO_SEARCH_RESULT,
+    videoList: payload.videoList
   }
 }
 
@@ -43,10 +43,10 @@ export function searchPicture(page, q, tags) {
   }
   return dispatch => {
     dispatch(_fetching());
-    search(page, "picture", caption, tags)
+    search(page, "video", caption, tags)
       .then(docs => {
         dispatch(_loadSearchResult({
-          pictureList: docs.data.data
+          videoList: docs.data.data
         }))
       })
   }
@@ -57,38 +57,38 @@ let initialState = {
   error: null,
   page: 1,
   searchPage: 1,
-  pictureList: []
+  videoList: []
 }
 
-const picture = (state = initialState, action) => {
+const video = (state = initialState, action) => {
   switch (action.type) {
-    case PICTURE_FETCHING:
+    case VIDEO_FETCHING:
       return {
         ...state,
         isFetching: true
       }
-    case PICTURE_FETCHED:
-      // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);
+    case VIDEO_FETCHED:
+      // const reducedList = reduceLargeList(state.videoList, action.videoList, DIRECTION_DOWN);
       if (action.nextPage === 2) { // reset list when switching from search state to initial state
-        state.pictureList = [];
+        state.videoList = [];
       }
       return {
         ...state,
         page: action.nextPage,
         isFetching: false,
-        pictureList: [...state.pictureList, ...action.pictureList]
+        videoList: [...state.videoList, ...action.videoList]
       }
-    case PICTURE_SEARCH_RESULT:
+    case VIDEO_SEARCH_RESULT:
       // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);
       return {
         ...state,
         searchPage: state.searchPage + 1,
         isFetching: false,
-        pictureList: action.pictureList
+        videoList: action.videoList
       }
     default:
       return state;
   }
 }
 
-export default picture;
+export default video;

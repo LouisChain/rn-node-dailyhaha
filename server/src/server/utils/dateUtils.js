@@ -1,8 +1,8 @@
 const compareToCurrentToHours = (str) => {
   let now = new Date();
-  let utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-  let myDate = new Date(str);
-  let diff = now - myDate;// in milliseconds
+  let utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+  let myDateUtc = new Date(str);
+  let diff = utcNow - myDateUtc;// in milliseconds
   let totalHours = diff / 1000 / 60 / 60;
 
   return totalHours;

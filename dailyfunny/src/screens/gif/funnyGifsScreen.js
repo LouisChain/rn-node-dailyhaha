@@ -2,13 +2,14 @@ import React, {useEffect} from "react";
 import {Alert, Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "react-navigation-hooks"
 import {connect} from "react-redux";
-import {fetchPicture} from "../../action-reducer/gif"
+import {fetchPicture, searchPicture} from "../../action-reducer/gif"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../pic/funnyPicsScreen";
 import {PICDETAIL} from "../../constants/routeConstants";
 import FooterActions from "../../components/FooterActions";
+import SearchPanel from "../../components/SearchPanel";
 
 const {width} = Dimensions.get("window");
 
@@ -43,7 +44,7 @@ function FunnyGifScreen(props) {
   }
 
   const onTagPress = (item) => {
-    Alert.alert("Under construction please be patient")
+    props.onSearchTag(1, null, [item]);
   }
 
   const onComment = (data) => {
@@ -89,6 +90,10 @@ function FunnyGifScreen(props) {
         onEndReached={() => fetchMore()}
         renderFooter={renderFooter}
       />
+      <SearchPanel
+        tags={["Animals", "Fail", "Weird", "Cats", "Cool", "Gross", "Pranks", "Dogs", "Funny Gifs"]}
+        table={"gif"}
+      />
     </View>
   );
 }
@@ -128,7 +133,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    fetchPicture: (page) => dispatch(fetchPicture(page))
+    fetchPicture: (page) => dispatch(fetchPicture(page)),
+    onSearchTag: (page, e, tags) => dispatch(searchPicture(page, e, tags)),
   }
 }
 

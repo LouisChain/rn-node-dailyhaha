@@ -1,5 +1,5 @@
 import {GAME_FETCHED, GAME_FETCHING} from "../constants/action"
-import {getGames} from "../utils/api"
+import {query} from "../utils/api"
 
 export function _fetching() {
   return {
@@ -17,7 +17,7 @@ function _fetchGame(payload) {
 
 export function fetchGame(page) {
   return dispatch => {
-    getGames(page)
+    query(page, "game")
       .then(docs => {
         dispatch(_fetchGame({
           gameList: docs.data.data

@@ -2,7 +2,7 @@ import axios from "axios";
 
 const defaultPagination = 50;
 const instance = axios.create({
-  baseURL: "http://192.168.3.159:3000",
+  baseURL: "http://192.168.1.3:3000",
   timeout: 30000
 });
 
@@ -13,33 +13,21 @@ const fbLogin = (fbToken, anonymous) => {
   });
 };
 
-const getPictures = (page = 1, limit = defaultPagination) => {
-  return instance.post("/picture/all", {
+const query = (page = 1, table = "picture", limit = defaultPagination,) => {
+  return instance.post("/" + table + "/all", {
     page,
     limit
   });
 };
 
-const getGifs = (page = 1, limit = defaultPagination) => {
-  return instance.post("/gif/all", {
+const search = (page = 1, table = "picture", caption = null, tags = null, limit = defaultPagination * 3) => {
+  return instance.post("/" + table + "/search", {
     page,
-    limit
-  });
-};
-
-const getGames = (page = 1, limit = defaultPagination) => {
-  return instance.post("/game/all", {
-    page,
-    limit
-  });
-};
-
-const getVideos = (page = 1, limit = defaultPagination) => {
-  return instance.post("/video/all", {
-    page,
-    limit
-  });
-};
+    limit,
+    caption,
+    tags
+  })
+}
 
 
-export {fbLogin, getPictures, getGifs, getGames, getVideos};
+export {fbLogin, query, search};

@@ -53,7 +53,12 @@ function FunnyGameScreen(props) {
 
   const {navigate} = useNavigation();
   const onOpenDetail = (data) => {
-    navigate(GAMEPLAYER, {gameUrl: data.gameUrl})
+    //navigate(GAMEPLAYER, {gameUrl: data.gameUrl})
+    Alert.alert("Under construction, please wait")
+  }
+
+  const onTagPress = (item) => {
+    Alert.alert(item)
   }
 
   const renderRow = (type, data) => {
@@ -73,10 +78,6 @@ function FunnyGameScreen(props) {
         </TouchableOpacity>
       </View>
     );
-  }
-
-  const onTagPress = (item) => {
-    Alert.alert(item)
   }
 
   return (

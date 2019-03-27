@@ -26,7 +26,7 @@ export const LAYOUT_SPACING = {
   xlarge: 18,
   xxlarge: 22,
   xxxlarge: 32,
-  actionBarHeight: 50
+  actionBarHeight: 48
 };
 
 export const FONT_SIZE = {

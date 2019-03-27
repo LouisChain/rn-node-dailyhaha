@@ -5,10 +5,10 @@ export default function Button(props) {
   const [pressStatus, setPressStatus] = useState(false);
 
   const _onHideUnderlay = () => {
-    setPressStatus(false);
+    // setPressStatus(false);
   }
   const _onShowUnderlay = () => {
-    setPressStatus(true);
+    setPressStatus(!pressStatus);
   }
 
   return (
@@ -20,8 +20,8 @@ export default function Button(props) {
           ? props.pressed.button
           : props.normal.button
       }
-      onHideUnderlay={() => _onHideUnderlay()}
-      onShowUnderlay={() => _onShowUnderlay()}
+      onHideUnderlay={_onHideUnderlay}
+      onShowUnderlay={_onShowUnderlay}
       onPress={props.onPress}
     >
       <Text
