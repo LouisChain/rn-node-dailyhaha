@@ -1,0 +1,2 @@
+##iOS
+ - install admob sdk

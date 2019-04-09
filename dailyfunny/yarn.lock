@@ -4081,7 +4081,7 @@ prop-types@15.5.8:
   dependencies:
     fbjs "^0.8.9"
 
-prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   dependencies:
@@ -4177,6 +4177,10 @@ react-native-admob@^2.0.0-beta.5:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-device-info@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.4.2.tgz#d24b09b7a5ea3c0aaf4446089d6d0e20950d0a6d"
+
 react-native-gesture-handler@^1.0.17, react-native-gesture-handler@~1.0.14:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.17.tgz#a046f371f277092157fc2781323d35a02a93daaf"
@@ -4229,12 +4233,6 @@ react-native-webview@^5.3.1:
   dependencies:
     escape-string-regexp "^1.0.5"
     fbjs "^0.8.17"
-
-react-native-youtube@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-youtube/-/react-native-youtube-1.1.0.tgz#efa30c4f7385d1951af643188e30760efd6c0784"
-  dependencies:
-    prop-types "^15.5.0"
 
 react-native@^0.59.1:
   version "0.59.1"

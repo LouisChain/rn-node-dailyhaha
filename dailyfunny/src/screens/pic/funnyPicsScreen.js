@@ -10,6 +10,13 @@ import LoadingView from "../../components/loading/footerLoading"
 import {PICDETAIL} from "../../constants/routeConstants";
 import FooterActions from "../../components/FooterActions"
 import SearchPanel from "../../components/SearchPanel";
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded,
+} from 'react-native-admob'
+import DeviceInfo from 'react-native-device-info';
 
 const {width} = Dimensions.get("window");
 
@@ -95,6 +102,12 @@ function FunnyPicsScreen(props) {
       <SearchPanel
         tags={["Animals", "Fail", "Weird", "Celebrity", "Cool", "Gross", "Cartoons", "Signs", "Costumes", "Illusions", "cant_park_there"]}
         table={"picture"}
+      />
+      <AdMobBanner
+        style={{marginBottom: 50}}
+        adSize="banner"
+        adUnitID="ca-app-pub-2350916781050098/1822411774"
+        testDevices={[DeviceInfo.getDeviceId()]}
       />
     </View>
   );

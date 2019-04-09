@@ -8,7 +8,6 @@ import FunnyGamesScreen from "../screens/game/funnyGameScreen";
 import FunnyGifsScreen from "../screens/gif/funnyGifsScreen";
 import FunnyVideosScreen from "../screens/video/funnyVideosScreen";
 import GamePlayerScreen from "../screens/game/gamePlayerScreen";
-import VideoPlayerScreen from "../screens/video/videoPlayer"
 import PicDetailScreen from "../screens/pic/zoomPicsScreen";
 import GifPlayerScreen from "../screens/gif/gifPlayerScreen"
 
@@ -63,9 +62,6 @@ const MainNavigator = createStackNavigator(
     },
     [GAMEPLAYER]: {
       screen: GamePlayerScreen
-    },
-    [VIDEOPLAYER]: {
-      screen: VideoPlayerScreen
     },
     [PICDETAIL]: {
       screen: PicDetailScreen
