@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"funny_db.gifs"},{"v":2,"key":{"url":1},"name":"url_1","ns":"funny_db.gifs","background":true}],"uuid":"692c39abf627468282f6315e1130039c"}

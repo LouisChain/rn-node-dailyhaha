@@ -2,7 +2,7 @@ import axios from "axios";
 
 const defaultPagination = 50;
 const instance = axios.create({
-  baseURL: "http://192.168.3.159:3000",
+  baseURL: "http://45.76.213.180:3000",
   timeout: 30000
 });
 
