@@ -1,3 +1,4 @@
+const Crawler = require("../../crawler");
 const Exception = require("../utils/exception");
 const DateUtils = require("../utils/dateUtils")
 const Const = require("../constants/index");
@@ -18,6 +19,7 @@ const query = async (req, res, next) => {
     let last = await tableObject.find().limit(1).sort({"createdAt": -1});
     let hours = DateUtils.compareToCurrentToHours(last[0].createdAt);
     if (hours > Const.HOURS_OUT_DATE) {
+      Crawler.latest();
       let stories = await tableObject.find(query).sort({"views": -1}).limit(limit).skip((page - 1) * limit).lean().exec();
       let count = await tableObject.countDocuments().exec();
       return res.json({data: stories, limit, page, count})

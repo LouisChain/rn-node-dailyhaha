@@ -10,17 +10,13 @@ import LoadingView from "../../components/loading/footerLoading"
 import {PICDETAIL} from "../../constants/routeConstants";
 import FooterActions from "../../components/FooterActions"
 import SearchPanel from "../../components/SearchPanel";
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  PublisherBanner,
-  AdMobRewarded,
-} from 'react-native-admob'
-import DeviceInfo from 'react-native-device-info';
+import FbAdBanner from "../../components/ads/FbAdBanner";
+import {showInterstitial} from "../../utils/AdUtils";
 
 const {width} = Dimensions.get("window");
 
 const imageHeight = width * 5 / 6;
+const itemHeight = 12 + 32 + 24 + 30 + 16 + 24 + imageHeight;
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.url !== r2.url;
@@ -34,7 +30,7 @@ const layoutProvider = new LayoutProvider(
     switch (type) {
       case 0:
         dim.width = width;
-        dim.height = 12 + 32 + 24 + 30 + 16 + 24 + imageHeight;
+        dim.height = itemHeight;
         break;
     }
   }
@@ -48,6 +44,9 @@ function FunnyPicsScreen(props) {
   }, []);
 
   const fetchMore = () => {
+    if(props.page % 3 === 0) {
+      showInterstitial();
+    }
     if (props.pictureList.length > 0 && (!props.isFetching))
       props.loadPicture(props.page)
   }
@@ -103,12 +102,7 @@ function FunnyPicsScreen(props) {
         tags={["Animals", "Fail", "Weird", "Celebrity", "Cool", "Gross", "Cartoons", "Signs", "Costumes", "Illusions", "cant_park_there"]}
         table={"picture"}
       />
-      <AdMobBanner
-        style={{marginBottom: 50}}
-        adSize="banner"
-        adUnitID="ca-app-pub-2350916781050098/1822411774"
-        testDevices={[DeviceInfo.getDeviceId()]}
-      />
+      <FbAdBanner/>
     </View>
   );
 }
@@ -116,6 +110,10 @@ function FunnyPicsScreen(props) {
 const styles = {
   container: {
     flex: 1
+  },
+  ad: {
+    height: itemHeight,
+    paddingTop: LAYOUT_SPACING.normal
   },
   item: {
     container: {

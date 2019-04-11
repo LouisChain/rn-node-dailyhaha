@@ -17,7 +17,7 @@ const dailyHaha = async () => {
   process.exit()
 }
 
-const latest = async () => {
+exports.latest = async () => {
   console.log("Updating Pictures");
   await Picture.latest();
   console.log("Updating Gifs");
@@ -25,7 +25,7 @@ const latest = async () => {
   console.log("Updating Videos");
   await Video.latest();
 
-  process.exit()
+  // process.exit()
 }
 
 
@@ -33,4 +33,4 @@ const latest = async () => {
 //   latest();
 // });
 
-latest();
+// latest();

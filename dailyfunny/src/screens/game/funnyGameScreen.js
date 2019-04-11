@@ -5,6 +5,8 @@ import {_fetching, fetchGame} from "../../action-reducer/game"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {useNavigation} from "react-navigation-hooks"
 import {GAMEPLAYER} from "../../constants/routeConstants";
+import FbAdBanner from "../../components/ads/FbAdBanner";
+import {showInterstitial} from "../../utils/AdUtils";
 
 const {width, height} = Dimensions.get("window");
 
@@ -47,6 +49,9 @@ function FunnyGameScreen(props) {
   }, []);
 
   const fetchMore = () => {
+    if(props.page % 2 === 0) {
+      showInterstitial();
+    }
     if (props.gameList.length > 0)
       props.fetchGame(props.page)
   }
@@ -92,6 +97,8 @@ function FunnyGameScreen(props) {
         onEndReachedThreshold={0.5}
         onEndReached={() => fetchMore()}
       />
+
+      <FbAdBanner/>
     </View>
   );
 }

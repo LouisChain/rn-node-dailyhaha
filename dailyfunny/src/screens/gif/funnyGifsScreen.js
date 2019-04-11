@@ -10,6 +10,8 @@ import LoadingView from "../pic/funnyPicsScreen";
 import {PICDETAIL} from "../../constants/routeConstants";
 import FooterActions from "../../components/FooterActions";
 import SearchPanel from "../../components/SearchPanel";
+import FbAdBanner from "../../components/ads/FbAdBanner";
+import {showInterstitial} from "../../utils/AdUtils";
 
 const {width} = Dimensions.get("window");
 
@@ -39,6 +41,9 @@ function FunnyGifScreen(props) {
   }, []);
 
   const fetchMore = () => {
+    if(props.page % 2 === 0) {
+      showInterstitial();
+    }
     if (props.gifList.length > 0 && !props.isFetching)
       props.fetchPicture(props.page)
   }
@@ -94,6 +99,7 @@ function FunnyGifScreen(props) {
         tags={["Animals", "Fail", "Weird", "Cats", "Cool", "Gross", "Pranks", "Dogs", "Funny Gifs"]}
         table={"gif"}
       />
+      <FbAdBanner/>
     </View>
   );
 }

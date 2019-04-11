@@ -10,6 +10,8 @@ import LoadingView from "../../components/loading/footerLoading";
 import {WebView} from "react-native-webview"
 import FooterActions from "../../components/FooterActions"
 import SearchPanel from "../../components/SearchPanel";
+import FbAdBanner from "../../components/ads/FbAdBanner";
+import {showInterstitial} from "../../utils/AdUtils";
 
 const {width} = Dimensions.get("window");
 
@@ -66,6 +68,9 @@ function FunnyVideosScreen(props) {
   }, [props.videoList])
 
   const fetchMore = () => {
+    if(props.page % 3 === 0) {
+      showInterstitial();
+    }
     if (props.videoList.length > 0 && !props.isFetching)
       props.fetchVideo(props.page)
   }
@@ -166,6 +171,7 @@ function FunnyVideosScreen(props) {
         tags={["Animals", "Cool", "Commercials", "Cartoons", "Extreme", "Magic", "Comedians"]}
         table={"video"}
       />
+      <FbAdBanner/>
     </View>
   );
 }
