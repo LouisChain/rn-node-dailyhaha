@@ -1,4 +1,4 @@
-package com.programfunnypics;
+package com.a4l.dailyhaha;
 
 import android.app.Application;
 
@@ -14,7 +14,6 @@ import com.facebook.soloader.SoLoader;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
-import com.sbugert.rnadmob.RNAdMobPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 
 import java.util.Arrays;
@@ -43,7 +42,6 @@ public class MainApplication extends Application implements ReactApplication {
                     new FBSDKPackage(mCallbackManager),
                     new FBAdsPackage(),
                     new RNDeviceInfo(),
-                    new RNAdMobPackage(),
                     new RNCWebViewPackage(),
                     new VectorIconsPackage(),
                     new RNGestureHandlerPackage()

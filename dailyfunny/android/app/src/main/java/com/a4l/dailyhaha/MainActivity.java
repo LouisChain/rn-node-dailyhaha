@@ -1,4 +1,4 @@
-package com.programfunnypics;
+package com.a4l.dailyhaha;
 
 import android.content.Intent;
 
