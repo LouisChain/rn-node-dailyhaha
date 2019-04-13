@@ -11,7 +11,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.soloader.SoLoader;
-import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -41,7 +40,6 @@ public class MainApplication extends Application implements ReactApplication {
                     new MainReactPackage(),
                     new FBSDKPackage(mCallbackManager),
                     new FBAdsPackage(),
-                    new RNDeviceInfo(),
                     new RNCWebViewPackage(),
                     new VectorIconsPackage(),
                     new RNGestureHandlerPackage()

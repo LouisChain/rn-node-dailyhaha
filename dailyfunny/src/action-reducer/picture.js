@@ -1,53 +1,75 @@
-import {PICTURE_FETCHED, PICTURE_FETCHING, PICTURE_SEARCH_RESULT} from "../constants/action"
+import {PICTURE_FETCHING, PICTURE_FETCHED, PICTURE_ERROR} from "../constants/action"
 import {query, search} from "../utils/api"
+import {getErrorMessage} from "../utils/errorUtils";
+import * as Console from "../utils/logger";
+
+const TABLE_NAME = "picture"
+const FETCHING = "PICTURE_FETCHING";
+const FETCHED = "PICTURE_FETCHED";
+const ERROR = "PICTURE_ERROR";
 
 function _fetching() {
   return {
-    type: PICTURE_FETCHING,
+    type: FETCHING,
     isFetching: true
+  }
+}
+
+function _error(payload) {
+  return {
+    type: ERROR,
+    error: payload
   }
 }
 
 function _loadPicture(payload) {
   return {
-    type: PICTURE_FETCHED,
-    pictureList: payload.pictureList,
-    nextPage: payload.nextPage
+    type: FETCHED,
+    data: payload.data,
+    resetData: payload.resetData
   }
 }
 
-export function loadPicture(page) {
+export function loadPicture(page = 1, resetData = false) {
   return dispatch => {
+    Console.log("loadPicture loading table=" + TABLE_NAME + " page=" + page);
     dispatch(_fetching());
-    query(page, "picture")
+    query(page, TABLE_NAME)
       .then(docs => {
+        Console.log("loadPicture success table=" + TABLE_NAME + " page=" + page);
         dispatch(_loadPicture({
-          pictureList: docs.data.data,
-          nextPage: page + 1
+          data: docs.data.data,
+          resetData
         }))
+      })
+      .catch(error => {
+        Console.log("loadPicture error table=" + TABLE_NAME + " page=" + page);
+        let message = getErrorMessage(error);
+        dispatch(_error(message));
       })
   }
 }
 
-function _loadSearchResult(payload) {
-  return {
-    type: PICTURE_SEARCH_RESULT,
-    pictureList: payload.pictureList
-  }
-}
-
-export function searchPicture(page, q, tags) {
+export function searchPicture(page = 1, query, tags, resetData = false) {
   let caption = null;
-  if (q) {
-    caption = q.trim();
+  if (query) {
+    caption = query.trim();
   }
   return dispatch => {
+    Console.log("searchPicture loading table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
     dispatch(_fetching());
-    search(page, "picture", caption, tags)
+    search(page, TABLE_NAME, caption, tags)
       .then(docs => {
-        dispatch(_loadSearchResult({
-          pictureList: docs.data.data
+        Console.log("searchPicture success table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
+        dispatch(_loadPicture({
+          data: docs.data.data,
+          resetData
         }))
+      })
+      .catch(error => {
+        Console.log("searchPicture error table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
+        let message = getErrorMessage(error);
+        dispatch(_error(message));
       })
   }
 }
@@ -56,39 +78,47 @@ let initialState = {
   isFetching: false,
   error: null,
   page: 1,
-  searchPage: 1,
-  pictureList: []
+  data: [],
+  resetData: false
 }
 
-const picture = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case PICTURE_FETCHING:
+    case FETCHING:
       return {
         ...state,
-        isFetching: true
+        isFetching: true,
+        error: null
       }
-    case PICTURE_FETCHED:
+    case FETCHED:
       // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);
-      if (action.nextPage === 2) { // reset list when switching from search state to initial state
-        state.pictureList = [];
+      if (action.resetData) {
+        return {
+          ...state,
+          page: 2,
+          resetData: false,
+          isFetching: false,
+          error: null,
+          data: action.data
+        }
+      } else {
+        return {
+          ...state,
+          page: state.page + 1,
+          isFetching: false,
+          error: null,
+          data: [...state.data, ...action.data]
+        }
       }
+    case ERROR:
       return {
         ...state,
-        page: action.nextPage,
-        isFetching: false,
-        pictureList: [...state.pictureList, ...action.pictureList]
-      }
-    case PICTURE_SEARCH_RESULT:
-      // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);
-      return {
-        ...state,
-        searchPage: state.searchPage + 1,
-        isFetching: false,
-        pictureList: action.pictureList
+        error: action.error,
+        isFetching: false
       }
     default:
       return state;
   }
 }
 
-export default picture;
+export default reducer;

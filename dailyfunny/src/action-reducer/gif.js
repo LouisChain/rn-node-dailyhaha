@@ -1,53 +1,75 @@
-import {GIF_FETCHED, GIF_FETCHING, GIF_SEARCH_RESULT} from "../constants/action"
+import {GIF_FETCHING, GIF_FETCHED, GIF_ERROR} from "../constants/action"
 import {query, search} from "../utils/api"
+import {getErrorMessage} from "../utils/errorUtils";
+import * as Console from "../utils/logger";
+
+const TABLE_NAME = "gif"
+const FETCHING = "GIF_FETCHING";
+const FETCHED = "GIF_FETCHED";
+const ERROR = "GIF_ERROR";
 
 function _fetching() {
   return {
-    type: GIF_FETCHING,
+    type: FETCHING,
     isFetching: true
   }
 }
 
-function _fetchPicture(payload) {
+function _error(payload) {
   return {
-    type: GIF_FETCHED,
-    gifList: payload.gifList,
-    nextPage: payload.nextPage
+    type: ERROR,
+    error: payload
   }
 }
 
-export function fetchPicture(page) {
+function _loadPicture(payload) {
+  return {
+    type: FETCHED,
+    data: payload.data,
+    resetData: payload.resetData
+  }
+}
+
+export function loadPicture(page = 1, resetData = false) {
   return dispatch => {
+    Console.log("loadPicture loading table=" + TABLE_NAME + " page=" + page);
     dispatch(_fetching());
-    query(page, "gif")
+    query(page, TABLE_NAME)
       .then(docs => {
-        dispatch(_fetchPicture({
-          gifList: docs.data.data,
-          nextPage: page + 1
+        Console.log("loadPicture success table=" + TABLE_NAME + " page=" + page);
+        dispatch(_loadPicture({
+          data: docs.data.data,
+          resetData
         }))
+      })
+      .catch(error => {
+        Console.log("loadPicture error table=" + TABLE_NAME + " page=" + page);
+        let message = getErrorMessage(error);
+        dispatch(_error(message));
       })
   }
 }
 
-function _loadSearchResult(payload) {
-  return {
-    type: GIF_SEARCH_RESULT,
-    gifList: payload.gifList
-  }
-}
-
-export function searchPicture(page, q, tags) {
+export function searchPicture(page = 1, query, tags, resetData = false) {
   let caption = null;
-  if (q) {
-    caption = q.trim();
+  if (query) {
+    caption = query.trim();
   }
   return dispatch => {
+    Console.log("searchPicture loading table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
     dispatch(_fetching());
-    search(page, "gif", caption, tags)
+    search(page, TABLE_NAME, caption, tags)
       .then(docs => {
-        dispatch(_loadSearchResult({
-          gifList: docs.data.data
+        Console.log("searchPicture success table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
+        dispatch(_loadPicture({
+          data: docs.data.data,
+          resetData
         }))
+      })
+      .catch(error => {
+        Console.log("searchPicture error table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
+        let message = getErrorMessage(error);
+        dispatch(_error(message));
       })
   }
 }
@@ -56,39 +78,47 @@ let initialState = {
   isFetching: false,
   error: null,
   page: 1,
-  searchPage: 1,
-  gifList: []
+  data: [],
+  resetData: false
 }
 
-const gif = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case GIF_FETCHING:
+    case FETCHING:
       return {
         ...state,
-        isFetching: action.isFetching
+        isFetching: true,
+        error: null
       }
-    case GIF_FETCHED:
-      // const reducedList = reduceLargeList(state.gifList, action.gifList, DIRECTION_DOWN);
-      if (action.nextPage === 2) { // reset list when switching from search state to initial state
-        state.gifList = [];
-      }
-      return {
-        ...state,
-        page: action.nextPage,
-        isFetching: false,
-        gifList: [...state.gifList, ...action.gifList]
-      }
-    case GIF_SEARCH_RESULT:
+    case FETCHED:
       // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);
+      if (action.resetData) {
+        return {
+          ...state,
+          page: 2,
+          resetData: false,
+          isFetching: false,
+          error: null,
+          data: action.data
+        }
+      } else {
+        return {
+          ...state,
+          page: state.page + 1,
+          isFetching: false,
+          error: null,
+          data: [...state.data, ...action.data]
+        }
+      }
+    case ERROR:
       return {
         ...state,
-        searchPage: state.searchPage + 1,
-        isFetching: false,
-        gifList: action.gifList
+        error: action.error,
+        isFetching: false
       }
     default:
       return state;
   }
 }
 
-export default gif;
+export default reducer;

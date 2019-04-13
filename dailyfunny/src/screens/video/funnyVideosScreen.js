@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Alert, Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
 import {useNavigation} from "react-navigation-hooks";
-import {fetchVideo, searchPicture} from "../../action-reducer/video"
+import {loadPicture, searchPicture} from "../../action-reducer/video"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
@@ -12,6 +12,7 @@ import FooterActions from "../../components/FooterActions"
 import SearchPanel from "../../components/SearchPanel";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import {showInterstitial} from "../../utils/AdUtils";
+import ErrorRetry from "../pic/funnyPicsScreen";
 
 const {width} = Dimensions.get("window");
 
@@ -40,20 +41,9 @@ const layoutProvider = new LayoutProvider(
 function FunnyVideosScreen(props) {
   const youtubePlayer = useRef();
   const {navigate} = useNavigation();
+  const [searchState, setSearchState] = useState({searching: false, query: null, selectedTags: null});
   const [videoId, setVideoId] = useState("a7qRuUAyqCg");
   const [refreshWebView, setRefreshWebView] = useState(false);
-  // const [play, setPlay] = useState(false);
-  // const [loop, setLoop] = useState(false);
-  // const [fullScreen, setFullScreen] = useState(false);
-  // const [bugYoutube, setBugYoutube] = useState(true);
-
-  useEffect(() => {
-    props.fetchVideo(props.page)
-
-    return () => {
-      //Unmounting
-    }
-  }, []);
 
   useEffect(() => {
     // setTimeout(() => {
@@ -62,34 +52,64 @@ function FunnyVideosScreen(props) {
   }, [videoId])
 
   useEffect(() => {
-    if (props.videoList.length === 50) {
-      setVideoId(props.videoList[0].utubId)
+    if (props.data.length === 50) {
+      setVideoId(props.data[0].utubId)
     }
-  }, [props.videoList])
+  }, [props.data])
+
+  useEffect(() => {
+    if (searchState.searching) {// switch from feed to search state then reset data to 1st page
+      props.searchPicture(1, searchState.query, searchState.selectedTags, true);
+    } else {// switch from search state to feed then reset data to 1st page
+      props.loadPicture(1, true)
+    }
+  }, [searchState]);
 
   const fetchMore = () => {
-    if(props.page % 3 === 0) {
+    if (props.page % 3 === 0 && props.page !== 0) {
       showInterstitial();
     }
-    if (props.videoList.length > 0 && !props.isFetching)
-      props.fetchVideo(props.page)
+    if (props.data.length > 0 && !props.isFetching) {
+      onRetry();
+    }
+  }
+
+  const onTagPress = (item) => {
+    setSearchState({
+      searching: true,
+      query: null,
+      selectedTags: [item]
+    })
+  }
+
+  const onRetry = () => {
+    if (searchState.searching) {
+      props.searchPicture(props.page, searchState.query, searchState.selectedTags, false);
+    } else {
+      props.loadPicture(props.page, false)
+    }
+  }
+
+  const onSearch = (searching, query, selectedTags) => {
+    setSearchState({
+      searching,
+      query,
+      selectedTags
+    })
+  }
+
+  const onComment = (data) => {
+    Alert.alert('', "Under construction please be patient")
+  }
+
+  const onShare = (data) => {
+    Alert.alert('', "Under construction please be patient")
   }
 
   const playVideo = (id) => {
     setVideoId(id);
   }
 
-  const onTagPress = (item) => {
-    props.onSearchTag(1, null, [item]);
-  }
-
-  const onComment = (data) => {
-    Alert.alert("Under construction please be patient")
-  }
-
-  const onShare = (data) => {
-    Alert.alert("Under construction please be patient")
-  }
 
   const renderRow = (type, data) => {
     return (
@@ -117,59 +137,41 @@ function FunnyVideosScreen(props) {
 
   return (
     <View style={styles.container}>
-      {/*<NavigationEvents*/}
-      {/*onWillFocus={payload => {*/}
-      {/*setBugYoutube(false);*/}
-      {/*}}*/}
-      {/*onWillBlur={payload => {*/}
-      {/*setBugYoutube(true);*/}
-      {/*}}*/}
-      {/*/>*/}
-      {/*{!bugYoutube &&*/}
-      {/*<YouTube*/}
-      {/*ref={youtubePlayer}*/}
-      {/*apiKey="Nothing"*/}
-      {/*videoId={videoId}*/}
-      {/*play={play}*/}
-      {/*loop={loop}*/}
-      {/*fullscreen={fullScreen}*/}
-      {/*showFullscreenButton={true}*/}
-      {/*rel={false}*/}
-      {/*controls={1}*/}
-      {/*style={[*/}
-      {/*{height: PixelRatio.roundToNearestPixel(width / (16 / 9))},*/}
-      {/*styles.youtube,*/}
-      {/*]}*/}
-      {/*onError={e => Alert.alert(e.error)}*/}
-      {/*onProgress={e => {*/}
-      {/*}}*/}
-      {/*/>*/}
-      {/*}*/}
-      <WebView
-        ref={youtubePlayer}
-        style={styles.youtube}
-        source={{uri: `https://www.youtube.com/embed/${videoId}?controls=0&modestbranding=1&rel=0&showinfo=0&loop=0&fs=0&hl=en&enablejsapi=1&origin=http%3A%2F%2Fwww.dailyhaha.com&widgetid=1`}}
-        scrollEnabled={false}
-        javaScriptEnabled
-        onLoadStart={() => setRefreshWebView(true)}
-        onLoad={() => setRefreshWebView(false)}
-      />
-      {refreshWebView && (
-        <LoadingView containerStyle={styles.webViewLoading}/>
-      )}
-      <RecyclerListView
-        style={styles.list}
-        forceNonDeterministicRendering={true}
-        rowRenderer={renderRow}
-        dataProvider={dataProvider.cloneWithRows(props.videoList)}
-        layoutProvider={layoutProvider}
-        onEndReachedThreshold={0.5}
-        onEndReached={() => fetchMore()}
-        renderFooter={renderFooter}
-      />
+      {
+        props.error ?
+          <ErrorRetry errorMessage={props.error} onRetry={onRetry}/>
+          :
+          (
+            <View>
+              <WebView
+                ref={youtubePlayer}
+                style={styles.youtube}
+                source={{uri: `https://www.youtube.com/embed/${videoId}?controls=0&modestbranding=1&rel=0&showinfo=0&loop=0&fs=0&hl=en&enablejsapi=1&origin=http%3A%2F%2Fwww.dailyhaha.com&widgetid=1`}}
+                scrollEnabled={false}
+                javaScriptEnabled
+                onLoadStart={() => setRefreshWebView(true)}
+                onLoad={() => setRefreshWebView(false)}
+                onError={() => setRefreshWebView(false)}
+              />
+              {
+                refreshWebView && <LoadingView containerStyle={styles.webViewLoading}/>
+              }
+              <RecyclerListView
+                forceNonDeterministicRendering={true}
+                rowRenderer={renderRow}
+                dataProvider={dataProvider.cloneWithRows(props.data)}
+                layoutProvider={layoutProvider}
+                onEndReachedThreshold={0.5}
+                onEndReached={() => fetchMore()}
+                renderFooter={renderFooter}
+              />
+            </View>
+          )
+      }
       <SearchPanel
         tags={["Animals", "Cool", "Commercials", "Cartoons", "Extreme", "Magic", "Comedians"]}
         table={"video"}
+        onSearch={(a, b, c) => onSearch(a, b, c)}
       />
       <FbAdBanner/>
     </View>
@@ -182,8 +184,7 @@ const styles = {
     backgroundColor: "black"
   },
   item: {
-    container: {
-    },
+    container: {},
     text: {
       color: "lightgray",
       fontSize: FONT_SIZE.veryLarge,
@@ -219,19 +220,20 @@ const styles = {
 
 function mapStateToProps(state) {
   const {video} = state;
-  const {isFetching, error, videoList, page} = video;
+  const {isFetching, error, data, page, resetData} = video;
   return {
     isFetching,
     error,
     page,
-    videoList
+    data,
+    resetData
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    fetchVideo: (page) => dispatch(fetchVideo(page)),
-    onSearchTag: (page, e, tags) => dispatch(searchPicture(page, e, tags)),
+    loadPicture: (page, resetData) => dispatch(loadPicture(page, resetData)),
+    searchPicture: (page, query, tags, resetData) => dispatch(searchPicture(page, query, tags, resetData)),
   }
 }
 

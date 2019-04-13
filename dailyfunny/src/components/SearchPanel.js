@@ -1,15 +1,13 @@
 import React, {PureComponent} from "react";
 import {Animated, Keyboard, TextInput, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
-import * as Picture from "../action-reducer/picture";
-import * as Gif from "../action-reducer/gif";
-import * as Video from "../action-reducer/video";
 import Icon from "../components/Icon";
 import SearchLoading from "../components/loading/SearchLoading";
 import {debounce} from "throttle-debounce";
 import {FONT_SIZE, LAYOUT_SPACING} from "../styles/styles";
 import Tags from "../components/tag/Tags";
 import PropTypes from "prop-types";
+import * as Console from "../utils/logger";
 
 const ANIMATION_TIME = 350;
 const TRANSLATE_Y = -200;
@@ -32,17 +30,8 @@ class SearchPanel extends PureComponent {
   }
 
   autoCompleteSearch = (text) => {
-    switch (this.props.table) {
-      case "picture" :
-        this.props.onSubmitPicture(1, text, this._seletedTags);
-        break;
-      case "gif":
-        this.props.onSubmitGif(1, text, this._seletedTags);
-        break;
-      case "video":
-        this.props.onSubmitVideo(1, text, this._seletedTags);
-        break;
-    }
+    Console.log("Searching...");
+    this.props.onSearch(true, text, this._seletedTags);
   };
 
   changeQuery = text => {
@@ -55,18 +44,8 @@ class SearchPanel extends PureComponent {
   }
 
   onClearText = () => {
+    this.props.onSearch(false, null, null);
     this._input.clear();
-    switch (this.props.table) {
-      case "picture" :
-        this.props.loadPicture(1);
-        break;
-      case "gif":
-        this.props.loadGif(1);
-        break;
-      case "video":
-        this.props.loadVideo(1);
-        break;
-    }
     this.onBlur();
   }
 
@@ -192,23 +171,10 @@ const styles = {
 function mapStateToProps(state) {
   const {
     isFetching,
-    error,
-  } = state.picture;
+  } = state.picture || state.gif || state.video;
   return {
     isFetching,
-    error,
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    onSubmitPicture: (page, e, tags) => dispatch(Picture.searchPicture(page, e, tags)),
-    onSubmitGif: (page, e, tags) => dispatch(Gif.searchPicture(page, e, tags)),
-    onSubmitVideo: (page, e, tags) => dispatch(Video.searchPicture(page, e, tags)),
-    loadPicture: (page) => dispatch(Picture.loadPicture(page)),
-    loadGif: (page) => dispatch(Gif.fetchPicture(page)),
-    loadVideo: (page) => dispatch(Video.fetchVideo(page))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SearchPanel)
+export default connect(mapStateToProps)(SearchPanel)

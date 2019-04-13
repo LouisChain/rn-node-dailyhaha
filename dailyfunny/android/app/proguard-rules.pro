@@ -44,15 +44,11 @@
 -keep class * extends com.facebook.react.bridge.JavaScriptModule { *; }
 -keep class * extends com.facebook.react.bridge.NativeModule { *; }
 -keepclassmembers,includedescriptorclasses class * { native <methods>; }
--keepclassmembers class *  { @com.facebook.react.uimanager.UIProp <fields>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.annotations.ReactProp <methods>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.annotations.ReactPropGroup <methods>; }
 
 -dontwarn com.facebook.react.**
-
-# TextLayoutBuilder uses a non-public Android constructor within StaticLayout.
-# See libs/proxy/src/main/java/com/facebook/fbui/textlayoutbuilder/proxy for details.
--dontwarn android.text.StaticLayout
+-keep,includedescriptorclasses class com.facebook.react.bridge.** { *; }
 
 # okhttp
 
@@ -69,13 +65,6 @@
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
 
+-dontnote
+-ignorewarnings
 
-#GlidModule
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.module.AppGlideModule
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}
--keep public class com.dylanvann.fastimage.* {*;}
--keep public class com.dylanvann.fastimage.** {*;}

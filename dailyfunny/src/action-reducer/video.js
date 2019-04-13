@@ -1,53 +1,75 @@
-import {VIDEO_FETCHED, VIDEO_FETCHING, VIDEO_SEARCH_RESULT} from "../constants/action"
+import {VIDEO_FETCHING, VIDEO_FETCHED, VIDEO_ERROR} from "../constants/action"
 import {query, search} from "../utils/api"
+import {getErrorMessage} from "../utils/errorUtils";
+import * as Console from "../utils/logger";
+
+const TABLE_NAME = "video"
+const FETCHING = "VIDEO_FETCHING";
+const FETCHED = "VIDEO_FETCHED";
+const ERROR = "VIDEO_ERROR";
 
 function _fetching() {
   return {
-    type: VIDEO_FETCHING,
+    type: FETCHING,
     isFetching: true
   }
 }
 
-function _fetchVideo(payload) {
+function _error(payload) {
   return {
-    type: VIDEO_FETCHED,
-    videoList: payload.videoList,
-    nextPage: payload.nextPage
+    type: ERROR,
+    error: payload
   }
 }
 
-export function fetchVideo(page) {
+function _loadPicture(payload) {
+  return {
+    type: FETCHED,
+    data: payload.data,
+    resetData: payload.resetData
+  }
+}
+
+export function loadPicture(page = 1, resetData = false) {
   return dispatch => {
+    Console.log("loadPicture loading table=" + TABLE_NAME + " page=" + page);
     dispatch(_fetching());
-    query(page, "video")
+    query(page, TABLE_NAME)
       .then(docs => {
-        dispatch(_fetchVideo({
-          videoList: docs.data.data,
-          nextPage: page + 1
+        Console.log("loadPicture success table=" + TABLE_NAME + " page=" + page);
+        dispatch(_loadPicture({
+          data: docs.data.data,
+          resetData
         }))
+      })
+      .catch(error => {
+        Console.log("loadPicture error table=" + TABLE_NAME + " page=" + page);
+        let message = getErrorMessage(error);
+        dispatch(_error(message));
       })
   }
 }
 
-function _loadSearchResult(payload) {
-  return {
-    type: VIDEO_SEARCH_RESULT,
-    videoList: payload.videoList
-  }
-}
-
-export function searchPicture(page, q, tags) {
+export function searchPicture(page = 1, query, tags, resetData = false) {
   let caption = null;
-  if (q) {
-    caption = q.trim();
+  if (query) {
+    caption = query.trim();
   }
   return dispatch => {
+    Console.log("searchPicture loading table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
     dispatch(_fetching());
-    search(page, "video", caption, tags)
+    search(page, TABLE_NAME, caption, tags)
       .then(docs => {
-        dispatch(_loadSearchResult({
-          videoList: docs.data.data
+        Console.log("searchPicture success table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
+        dispatch(_loadPicture({
+          data: docs.data.data,
+          resetData
         }))
+      })
+      .catch(error => {
+        Console.log("searchPicture error table=" + TABLE_NAME + " page=" + page + " query=" + query + " tags=" + tags);
+        let message = getErrorMessage(error);
+        dispatch(_error(message));
       })
   }
 }
@@ -56,39 +78,47 @@ let initialState = {
   isFetching: false,
   error: null,
   page: 1,
-  searchPage: 1,
-  videoList: []
+  data: [],
+  resetData: false
 }
 
-const video = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case VIDEO_FETCHING:
+    case FETCHING:
       return {
         ...state,
-        isFetching: true
+        isFetching: true,
+        error: null
       }
-    case VIDEO_FETCHED:
-      // const reducedList = reduceLargeList(state.videoList, action.videoList, DIRECTION_DOWN);
-      if (action.nextPage === 2) { // reset list when switching from search state to initial state
-        state.videoList = [];
-      }
-      return {
-        ...state,
-        page: action.nextPage,
-        isFetching: false,
-        videoList: [...state.videoList, ...action.videoList]
-      }
-    case VIDEO_SEARCH_RESULT:
+    case FETCHED:
       // const reducedList = reduceLargeList(state.pictureList, action.pictureList, DIRECTION_DOWN);
+      if (action.resetData) {
+        return {
+          ...state,
+          page: 2,
+          resetData: false,
+          isFetching: false,
+          error: null,
+          data: action.data
+        }
+      } else {
+        return {
+          ...state,
+          page: state.page + 1,
+          isFetching: false,
+          error: null,
+          data: [...state.data, ...action.data]
+        }
+      }
+    case ERROR:
       return {
         ...state,
-        searchPage: state.searchPage + 1,
-        isFetching: false,
-        videoList: action.videoList
+        error: action.error,
+        isFetching: false
       }
     default:
       return state;
   }
 }
 
-export default video;
+export default reducer;

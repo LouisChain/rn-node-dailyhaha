@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const defaultPagination = 50;
+const defaultPagination = 5;
 const instance = axios.create({
   baseURL: "http://45.76.213.180:3000",
   timeout: 30000
@@ -20,7 +20,7 @@ const query = (page = 1, table = "picture", limit = defaultPagination,) => {
   });
 };
 
-const search = (page = 1, table = "picture", caption = null, tags = null, limit = defaultPagination * 3) => {
+const search = (page = 1, table = "picture", caption = null, tags = null, limit = defaultPagination) => {
   return instance.post("/" + table + "/search", {
     page,
     limit,
