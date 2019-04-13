@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Alert, Dimensions, Image, Text, TouchableOpacity, View, RefreshControl} from "react-native";
 import {useNavigation} from "react-navigation-hooks"
 import {connect} from "react-redux";
-import {loadPicture, searchPicture} from "../../action-reducer/picture"
+import {fetchData, searchData} from "../../action-reducer/picture"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
@@ -43,9 +43,9 @@ function FunnyPicsScreen(props) {
 
   useEffect(() => {
     if (searchState.searching) {// switch from feed to search state then reset data to 1st page
-      props.searchPicture(1, searchState.query, searchState.selectedTags, true);
+      props.searchData(1, searchState.query, searchState.selectedTags, true);
     } else {// switch from search state to feed then reset data to 1st page
-      props.loadPicture(1, true)
+      props.fetchData(1, true)
     }
   }, [searchState]);
 
@@ -68,9 +68,9 @@ function FunnyPicsScreen(props) {
 
   const onRetry = () => {
     if (searchState.searching) {
-      props.searchPicture(props.page, searchState.query, searchState.selectedTags, false);
+      props.searchData(props.page, searchState.query, searchState.selectedTags, false);
     } else {
-      props.loadPicture(props.page, false)
+      props.fetchData(props.page, false)
     }
   }
 
@@ -182,8 +182,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadPicture: (page, resetData) => dispatch(loadPicture(page, resetData)),
-    searchPicture: (page, query, tags, resetData) => dispatch(searchPicture(page, query, tags, resetData)),
+    fetchData: (page, resetData) => dispatch(fetchData(page, resetData)),
+    searchData: (page, query, tags, resetData) => dispatch(searchData(page, query, tags, resetData)),
   }
 }
 
