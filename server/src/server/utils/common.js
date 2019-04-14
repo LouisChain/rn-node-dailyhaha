@@ -20,7 +20,7 @@ const query = async (req, res, next) => {
     let hours = DateUtils.compareToCurrentToHours(last[0].createdAt);
     if (hours > Const.HOURS_OUT_DATE) {
       Crawler.latest();
-      let stories = await tableObject.find(query).sort({"views": -1}).limit(limit).skip((page - 1) * limit).lean().exec();
+      let stories = await tableObject.find(query).sort({$natural: -1}).limit(limit).skip((page - 1) * limit).lean().exec();
       let count = await tableObject.countDocuments().exec();
       return res.json({data: stories, limit, page, count})
     } else {
