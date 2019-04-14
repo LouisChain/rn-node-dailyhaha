@@ -34,3 +34,10 @@ exports.latest = async () => {
 // });
 
 // latest();
+
+console.log("Updating Pictures");
+ Picture.latest();
+console.log("Updating Gifs");
+ Gif.latest();
+console.log("Updating Videos");
+ Video.latest();
