@@ -5,7 +5,7 @@ import Icon from "../../components/Icon"
 export default function ErrorRetry(props) {
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.containerStyle]}>
       <Text style={{justifyContent: "center", textAlign: 'center'}}>{props.errorMessage}</Text>
       <TouchableOpacity onPress={props.onRetry} style={{width: 32, height: 32}}>
         <Icon name="refresh"/>

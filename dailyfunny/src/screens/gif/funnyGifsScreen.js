@@ -6,7 +6,7 @@ import {fetchData, searchData} from "../../action-reducer/gif"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
 import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
-import LoadingView from "../pic/funnyPicsScreen";
+import LoadingView from "../../components/loading/footerLoading"
 import {PICDETAIL} from "../../constants/routeConstants";
 import FooterActions from "../../components/FooterActions";
 import SearchPanel from "../../components/SearchPanel";

@@ -12,9 +12,9 @@ import FooterActions from "../../components/FooterActions"
 import SearchPanel from "../../components/SearchPanel";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import {showInterstitial} from "../../utils/AdUtils";
-import ErrorRetry from "../pic/funnyPicsScreen";
+import ErrorRetry from "../../components/error/ErrorRetry";
 
-const {width} = Dimensions.get("window");
+const {width, H} = Dimensions.get("window");
 
 const webViewHeight = width * 3 / 4;
 
@@ -52,7 +52,7 @@ function FunnyVideosScreen(props) {
   }, [videoId])
 
   useEffect(() => {
-    if (props.data.length === 50) {
+    if (props.data.length > 0) {
       setVideoId(props.data[0].utubId)
     }
   }, [props.data])
@@ -137,42 +137,37 @@ function FunnyVideosScreen(props) {
 
   return (
     <View style={styles.container}>
+      <WebView
+        ref={youtubePlayer}
+        style={styles.youtube}
+        source={{uri: `https://www.youtube.com/embed/${videoId}?controls=0&modestbranding=1&rel=0&showinfo=0&loop=0&fs=0&hl=en&enablejsapi=1&origin=http%3A%2F%2Fwww.dailyhaha.com&widgetid=1`}}
+        scrollEnabled={false}
+        javaScriptEnabled
+        onLoadStart={() => setRefreshWebView(true)}
+        onLoad={() => setRefreshWebView(false)}
+        onError={() => setRefreshWebView(false)}
+      />
       {
-        props.error ?
-          <ErrorRetry errorMessage={props.error} onRetry={onRetry}/>
-          :
-          (
-            <View>
-              <WebView
-                ref={youtubePlayer}
-                style={styles.youtube}
-                source={{uri: `https://www.youtube.com/embed/${videoId}?controls=0&modestbranding=1&rel=0&showinfo=0&loop=0&fs=0&hl=en&enablejsapi=1&origin=http%3A%2F%2Fwww.dailyhaha.com&widgetid=1`}}
-                scrollEnabled={false}
-                javaScriptEnabled
-                onLoadStart={() => setRefreshWebView(true)}
-                onLoad={() => setRefreshWebView(false)}
-                onError={() => setRefreshWebView(false)}
-              />
-              {
-                refreshWebView && <LoadingView containerStyle={styles.webViewLoading}/>
-              }
-              <RecyclerListView
-                forceNonDeterministicRendering={true}
-                rowRenderer={renderRow}
-                dataProvider={dataProvider.cloneWithRows(props.data)}
-                layoutProvider={layoutProvider}
-                onEndReachedThreshold={0.5}
-                onEndReached={() => fetchMore()}
-                renderFooter={renderFooter}
-              />
-            </View>
-          )
+        refreshWebView && <LoadingView containerStyle={styles.webViewLoading}/>
       }
+      <RecyclerListView
+        style={{marginTop: webViewHeight + LAYOUT_SPACING.actionBarHeight}}
+        forceNonDeterministicRendering={true}
+        rowRenderer={renderRow}
+        dataProvider={dataProvider.cloneWithRows(props.data)}
+        layoutProvider={layoutProvider}
+        onEndReachedThreshold={300}
+        onEndReached={() => fetchMore()}
+        renderFooter={renderFooter}
+      />
       <SearchPanel
         tags={["Animals", "Cool", "Commercials", "Cartoons", "Extreme", "Magic", "Comedians"]}
         table={"video"}
         onSearch={(a, b, c) => onSearch(a, b, c)}
       />
+      {
+        props.error && <ErrorRetry containerStyle={{position: 'absolute', flex: 1}} errorMessage={props.error} onRetry={onRetry}/>
+      }
       <FbAdBanner/>
     </View>
   );
@@ -209,8 +204,6 @@ const styles = {
     top: LAYOUT_SPACING.actionBarHeight,
     width,
     height: webViewHeight
-    // alignSelf: 'stretch',
-    // marginVertical: LAYOUT_SPACING.small,
   },
   list: {
     marginTop: webViewHeight,
