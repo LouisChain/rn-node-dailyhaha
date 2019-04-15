@@ -3,7 +3,7 @@ import {View} from "react-native";
 import {BannerView} from 'react-native-fbads';
 import {AdSettings} from 'react-native-fbads';
 
-AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+// AdSettings.addTestDevice(AdSettings.currentDeviceHash);
 
 export default function ViewWithBanner(props) {
   return (
