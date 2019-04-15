@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {Alert, Dimensions, Image, Text, TouchableOpacity, View, RefreshControl} from "react-native";
+import {AndroidBackHandler} from "react-navigation-backhandler"
 import {useNavigation} from "react-navigation-hooks"
 import {connect} from "react-redux";
 import {fetchData, searchData} from "../../action-reducer/picture"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
-import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
+import {COLORS, FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../../components/loading/footerLoading"
 import {PICDETAIL} from "../../constants/routeConstants";
@@ -36,10 +37,17 @@ const layoutProvider = new LayoutProvider(
     }
   }
 );
+let smallestVisibleIndex = 0;
 
 function FunnyPicsScreen(props) {
   const {navigate} = useNavigation();
+  const newFeeds = useRef();
+  const [refreshing, setRefreshing] = useState(false);
   const [searchState, setSearchState] = useState({searching: false, query: null, selectedTags: null});
+
+  useEffect(() => {
+    setRefreshing(props.isFetching);
+  }, [props.isFetching])
 
   useEffect(() => {
     if (searchState.searching) {// switch from feed to search state then reset data to 1st page
@@ -90,6 +98,27 @@ function FunnyPicsScreen(props) {
     Alert.alert('', "Under construction please be patient")
   }
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    props.fetchData(1, true);
+  }
+
+  const onBackButtonPressAndroid = () => {
+    if (smallestVisibleIndex !== 0) {
+      newFeeds.current.scrollToTop(true);
+      onRefresh();
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const onVisibleIndexesChanged = (all, now, notNow) => {
+    if (all && all.length > 0) {
+      smallestVisibleIndex = all[0];
+    }
+  }
+
   const renderRow = (type, data) => {
     return (
       <View style={styles.item.container}>
@@ -116,26 +145,39 @@ function FunnyPicsScreen(props) {
 
   return (
     <View style={styles.container}>
-      {
-        props.error ?
-          <ErrorRetry errorMessage={props.error} onRetry={onRetry}/>
-          :
-          <RecyclerListView
-            forceNonDeterministicRendering={true}
-            rowRenderer={renderRow}
-            dataProvider={dataProvider.cloneWithRows(props.data)}
-            layoutProvider={layoutProvider}
-            onEndReachedThreshold={0.5}
-            onEndReached={() => fetchMore()}
-            renderFooter={renderFooter}
-          />
-      }
-      <SearchPanel
-        tags={["Animals", "Fail", "Weird", "Celebrity", "Cool", "Gross", "Cartoons", "Signs", "Costumes", "Illusions", "cant_park_there"]}
-        table={"picture"}
-        onSearch={(a, b, c) => onSearch(a, b, c)}
-      />
-      <FbAdBanner/>
+      <AndroidBackHandler onBackPress={onBackButtonPressAndroid}>
+        {
+          props.error ?
+            <ErrorRetry errorMessage={props.error} onRetry={onRetry}/>
+            :
+            <RecyclerListView
+              scrollViewProps={{
+                refreshControl: (
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={[COLORS.activeColor]}
+                  />
+                )
+              }}
+              ref={newFeeds}
+              forceNonDeterministicRendering={true}
+              rowRenderer={renderRow}
+              dataProvider={dataProvider.cloneWithRows(props.data)}
+              layoutProvider={layoutProvider}
+              onEndReachedThreshold={0.5}
+              onEndReached={() => fetchMore()}
+              renderFooter={renderFooter}
+              onVisibleIndexesChanged={onVisibleIndexesChanged}
+            />
+        }
+        <SearchPanel
+          tags={["Animals", "Fail", "Weird", "Celebrity", "Cool", "Gross", "Cartoons", "Signs", "Costumes", "Illusions", "cant_park_there"]}
+          table={"picture"}
+          onSearch={(a, b, c) => onSearch(a, b, c)}
+        />
+        <FbAdBanner/>
+      </AndroidBackHandler>
     </View>
   );
 }
