@@ -5,8 +5,9 @@ import {
   createSwitchNavigator
 } from "react-navigation";
 import NavigationService from "../utils/NavigationService";
-import { MAIN } from "../constants/routeConstants";
+import { MAIN, POLICY } from "../constants/routeConstants";
 import MainNavigator from "./mainNavigator";
+import PolicyScreen from "../screens/privacy/PolicyScreen";
 
 const prefix =
   Platform.OS === "android" ? "casioapp://casioapp/" : "casioapp://";
@@ -26,10 +27,11 @@ export default class RootComponent extends Component {
 
 const RootNavigator = createSwitchNavigator(
   {
+    [POLICY]: PolicyScreen,
     [MAIN]: MainNavigator
   },
   {
-    initialRouteName: MAIN
+    initialRouteName: POLICY
   }
 );
 
