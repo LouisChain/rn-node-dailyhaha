@@ -27,11 +27,11 @@ export default class RootComponent extends Component {
 
 const RootNavigator = createSwitchNavigator(
   {
-    [POLICY]: PolicyScreen,
+    // [POLICY]: PolicyScreen,
     [MAIN]: MainNavigator
   },
   {
-    initialRouteName: POLICY
+    initialRouteName: MAIN
   }
 );
 

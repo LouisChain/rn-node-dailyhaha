@@ -2,7 +2,17 @@ import React from "react"
 import {createBottomTabNavigator, createStackNavigator} from "react-navigation";
 import Icon from "../components/IconBadge"
 import {COLORS} from "../styles/styles";
-import {FUNNYGAMES, FUNNYGIFS, FUNNYPICS, MAINTAB, GAMEPLAYER, FUNNYVIDEOS, VIDEOPLAYER, PICDETAIL, GIFDETAIL} from "../constants/routeConstants";
+import {
+  FUNNYGAMES,
+  FUNNYGIFS,
+  FUNNYPICS,
+  MAINTAB,
+  GAMEPLAYER,
+  FUNNYVIDEOS,
+  PICDETAIL,
+  GIFDETAIL,
+  POLICY
+} from "../constants/routeConstants";
 import FunnyPictureScreen from "../screens/pic/funnyPicsScreen";
 import FunnyGamesScreen from "../screens/game/funnyGameScreen";
 import FunnyGifsScreen from "../screens/gif/funnyGifsScreen";
@@ -10,6 +20,26 @@ import FunnyVideosScreen from "../screens/video/funnyVideosScreen";
 import GamePlayerScreen from "../screens/game/gamePlayerScreen";
 import PicDetailScreen from "../screens/pic/zoomPicsScreen";
 import GifPlayerScreen from "../screens/gif/gifPlayerScreen"
+import PolicyScreen from "../screens/privacy/PolicyScreen";
+
+const getTabName = (routeName) => {
+  if(routeName === FUNNYPICS) {
+    return "PICTURES";
+  }
+  if(routeName === FUNNYGIFS) {
+    return "GIFS";
+  }
+  if(routeName === FUNNYVIDEOS) {
+    return "VIDEOS";
+  }
+  if(routeName === FUNNYGAMES) {
+    return "GAMES";
+  }
+  if(routeName === POLICY) {
+    return "POLICY";
+  }
+  return "DEFAULT"
+}
 
 
 const BottomTabNavigator = createBottomTabNavigator(
@@ -25,11 +55,14 @@ const BottomTabNavigator = createBottomTabNavigator(
     },
     [FUNNYGAMES]: {
       screen: FunnyGamesScreen
-    }
+    },
+    [POLICY]: {
+      screen: PolicyScreen
+    },
   },
   {
     defaultNavigationOptions: ({navigation}) => ({
-      title: navigation.state.routeName === FUNNYPICS ? "PICTURES" : navigation.state.routeName === FUNNYGIFS ? "GIFS" : navigation.state.routeName === FUNNYVIDEOS ? "VIDEOS" :"GAMES",
+      title: getTabName(navigation.state.routeName),
       tabBarIcon: ({focused, horizontal, tintColor}) => {
         const {routeName} = navigation.state;
         let iconName;
@@ -39,8 +72,10 @@ const BottomTabNavigator = createBottomTabNavigator(
           iconName = `card-giftcard`;
         } else if (routeName === FUNNYGAMES) {
           iconName = `games`;
-        }else if (routeName === FUNNYVIDEOS) {
+        } else if (routeName === FUNNYVIDEOS) {
           iconName = `ondemand-video`;
+        } else if (routeName === POLICY) {
+          iconName = `center-focus-strong`
         }
 
         return <Icon name={iconName} color={tintColor}/>;
