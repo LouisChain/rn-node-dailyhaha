@@ -13,11 +13,12 @@ import SearchPanel from "../../components/SearchPanel";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import ErrorRetry from "../../components/error/ErrorRetry";
 import {showInterstitial} from "../../utils/AdUtils";
+import {FULL_ADS_PAGE_SHOWN} from "../../constants/common";
 
 const {width} = Dimensions.get("window");
 
 const dataProvider = new DataProvider((r1, r2) => {
-  return r1.url !== r2.url;
+  return r1._id !== r2._id;
 });
 
 const layoutProvider = new LayoutProvider(
@@ -52,7 +53,7 @@ function FunnyGifScreen(props) {
   }, [searchState]);
 
   const fetchMore = () => {
-    if (props.page % 3 === 0 && props.page !== 0) {
+    if (props.page % FULL_ADS_PAGE_SHOWN === 0 && props.page !== 0) {
       showInterstitial();
     }
     if (props.data.length > 0 && !props.isFetching) {

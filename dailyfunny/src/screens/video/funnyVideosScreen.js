@@ -13,6 +13,7 @@ import SearchPanel from "../../components/SearchPanel";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import {showInterstitial} from "../../utils/AdUtils";
 import ErrorRetry from "../../components/error/ErrorRetry";
+import {FULL_ADS_PAGE_SHOWN} from "../../constants/common";
 
 const {width, H} = Dimensions.get("window");
 
@@ -21,7 +22,7 @@ const webViewHeight = width * 3 / 4;
 const imageHeight = width * 5 / 6;
 
 const dataProvider = new DataProvider((r1, r2) => {
-  return r1.url !== r2.url;
+  return r1._id !== r2._id;
 });
 
 const layoutProvider = new LayoutProvider(
@@ -71,7 +72,7 @@ function FunnyVideosScreen(props) {
   }, [searchState]);
 
   const fetchMore = () => {
-    if (props.page % 3 === 0 && props.page !== 0) {
+    if (props.page % FULL_ADS_PAGE_SHOWN === 0 && props.page !== 0) {
       showInterstitial();
     }
     if (props.data.length > 0 && !props.isFetching) {

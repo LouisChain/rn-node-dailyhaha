@@ -7,6 +7,18 @@ const TABLE_NAME = "gif"
 const FETCHING = GIF_FETCHING;
 const FETCHED = GIF_FETCHED;
 const ERROR = GIF_ERROR;
+const dummyData = [{
+  "_id": "5cbbf795efd9b153e3b7bfc7",
+  "tags": [
+    "cool"
+  ],
+  "comment": [],
+  "createdAt": "2019-04-14T10:10:29.476Z",
+  "url": "http://dailyhaha.com/_pics/fun-place-to-go-swimming_th.jpg",
+  "caption": "fun place to go swimming",
+  "views": 945,
+  "__v": 0
+}]
 
 function _fetching() {
   return {
@@ -78,7 +90,7 @@ let initialState = {
   isFetching: false,
   error: null,
   page: 1,
-  data: [],
+  data: [...dummyData],
   resetData: false
 }
 

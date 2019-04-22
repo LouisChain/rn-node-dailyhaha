@@ -14,6 +14,7 @@ import SearchPanel from "../../components/SearchPanel";
 import ErrorRetry from "../../components/error/ErrorRetry";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import {showInterstitial} from "../../utils/AdUtils";
+import {FULL_ADS_PAGE_SHOWN} from "../../constants/common";
 
 const {width} = Dimensions.get("window");
 
@@ -21,7 +22,7 @@ const imageHeight = width * 5 / 6;
 const itemHeight = 12 + 32 + 24 + 30 + 16 + 24 + imageHeight;
 
 const dataProvider = new DataProvider((r1, r2) => {
-  return r1.url !== r2.url;
+  return r1._id !== r2._id;
 });
 
 const layoutProvider = new LayoutProvider(
@@ -58,7 +59,7 @@ function FunnyPicsScreen(props) {
   }, [searchState]);
 
   const fetchMore = () => {
-    if (props.page % 3 === 0 && props.page !== 0) {
+    if (props.page % FULL_ADS_PAGE_SHOWN === 0 && props.page !== 0) {
       showInterstitial();
     }
     if (props.data.length > 0 && !props.isFetching) {
@@ -145,7 +146,7 @@ function FunnyPicsScreen(props) {
 
   return (
     <View style={styles.container}>
-      <AndroidBackHandler onBackPress={onBackButtonPressAndroid}>
+      <AndroidBackHandler style={styles.contain} onBackPress={onBackButtonPressAndroid}>
         {
           props.error ?
             <ErrorRetry errorMessage={props.error} onRetry={onRetry}/>
@@ -176,8 +177,8 @@ function FunnyPicsScreen(props) {
           table={"picture"}
           onSearch={(a, b, c) => onSearch(a, b, c)}
         />
-        <FbAdBanner/>
       </AndroidBackHandler>
+      <FbAdBanner/>
     </View>
   );
 }
