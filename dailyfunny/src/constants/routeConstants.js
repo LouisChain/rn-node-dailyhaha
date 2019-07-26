@@ -1,5 +1,6 @@
 // Root
 export const MAIN = 'Main';
+export const POLICY = "Policy";
 
 // Picture
 export const FUNNYPICS = "FunnyPicsScreen";

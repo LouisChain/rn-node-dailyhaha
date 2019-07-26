@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Alert, Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Dimensions, Image, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
 import {useNavigation} from "react-navigation-hooks";
 import {fetchData, searchData} from "../../action-reducer/video"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
-import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
+import {COLORS, FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../../components/loading/footerLoading";
 import {WebView} from "react-native-webview"
@@ -13,6 +13,7 @@ import SearchPanel from "../../components/SearchPanel";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import {showInterstitial} from "../../utils/AdUtils";
 import ErrorRetry from "../../components/error/ErrorRetry";
+import {FULL_ADS_PAGE_SHOWN} from "../../constants/common";
 
 const {width, H} = Dimensions.get("window");
 
@@ -21,7 +22,7 @@ const webViewHeight = width * 3 / 4;
 const imageHeight = width * 5 / 6;
 
 const dataProvider = new DataProvider((r1, r2) => {
-  return r1.url !== r2.url;
+  return r1._id !== r2._id;
 });
 
 const layoutProvider = new LayoutProvider(
@@ -41,9 +42,14 @@ const layoutProvider = new LayoutProvider(
 function FunnyVideosScreen(props) {
   const youtubePlayer = useRef();
   const {navigate} = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
   const [searchState, setSearchState] = useState({searching: false, query: null, selectedTags: null});
   const [videoId, setVideoId] = useState("a7qRuUAyqCg");
   const [refreshWebView, setRefreshWebView] = useState(false);
+
+  useEffect(() => {
+    setRefreshing(props.isFetching);
+  }, [props.isFetching])
 
   useEffect(() => {
     // setTimeout(() => {
@@ -66,7 +72,7 @@ function FunnyVideosScreen(props) {
   }, [searchState]);
 
   const fetchMore = () => {
-    if (props.page % 3 === 0 && props.page !== 0) {
+    if (props.page % FULL_ADS_PAGE_SHOWN === 0 && props.page !== 0) {
       showInterstitial();
     }
     if (props.data.length > 0 && !props.isFetching) {
@@ -104,6 +110,11 @@ function FunnyVideosScreen(props) {
 
   const onShare = (data) => {
     Alert.alert('', "Under construction please be patient")
+  }
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    props.fetchData(1, true);
   }
 
   const playVideo = (id) => {
@@ -151,6 +162,15 @@ function FunnyVideosScreen(props) {
         refreshWebView && <LoadingView containerStyle={styles.webViewLoading}/>
       }
       <RecyclerListView
+        scrollViewProps={{
+          refreshControl: (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[COLORS.activeColor]}
+            />
+          )
+        }}
         style={{marginTop: webViewHeight + LAYOUT_SPACING.actionBarHeight}}
         forceNonDeterministicRendering={true}
         rowRenderer={renderRow}

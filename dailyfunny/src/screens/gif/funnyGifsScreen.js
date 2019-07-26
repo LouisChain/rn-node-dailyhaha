@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Alert, Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Dimensions, Image, Text, TouchableOpacity, View, RefreshControl} from "react-native";
 import {useNavigation} from "react-navigation-hooks"
 import {connect} from "react-redux";
 import {fetchData, searchData} from "../../action-reducer/gif"
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview"
-import {FONT_SIZE, LAYOUT_SPACING} from "../../styles/styles";
+import {FONT_SIZE, LAYOUT_SPACING, COLORS} from "../../styles/styles";
 import Tags from "../../components/tag/Tags";
 import LoadingView from "../../components/loading/footerLoading"
 import {PICDETAIL} from "../../constants/routeConstants";
@@ -13,11 +13,12 @@ import SearchPanel from "../../components/SearchPanel";
 import FbAdBanner from "../../components/ads/FbAdBanner";
 import ErrorRetry from "../../components/error/ErrorRetry";
 import {showInterstitial} from "../../utils/AdUtils";
+import {FULL_ADS_PAGE_SHOWN} from "../../constants/common";
 
 const {width} = Dimensions.get("window");
 
 const dataProvider = new DataProvider((r1, r2) => {
-  return r1.url !== r2.url;
+  return r1._id !== r2._id;
 });
 
 const layoutProvider = new LayoutProvider(
@@ -36,7 +37,12 @@ const layoutProvider = new LayoutProvider(
 
 function FunnyGifScreen(props) {
   const {navigate} = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
   const [searchState, setSearchState] = useState({searching: false, query: null, selectedTags: null});
+
+  useEffect(() => {
+    setRefreshing(props.isFetching);
+  }, [props.isFetching])
 
   useEffect(() => {
     if (searchState.searching) {// switch from feed to search state then reset data to 1st page
@@ -47,7 +53,7 @@ function FunnyGifScreen(props) {
   }, [searchState]);
 
   const fetchMore = () => {
-    if (props.page % 3 === 0 && props.page !== 0) {
+    if (props.page % FULL_ADS_PAGE_SHOWN === 0 && props.page !== 0) {
       showInterstitial();
     }
     if (props.data.length > 0 && !props.isFetching) {
@@ -87,6 +93,11 @@ function FunnyGifScreen(props) {
     Alert.alert('', "Under construction please be patient")
   }
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    props.fetchData(1, true);
+  }
+
   const renderRow = (type, data) => {
     return (
       <View style={styles.item.container}>
@@ -118,6 +129,15 @@ function FunnyGifScreen(props) {
           <ErrorRetry errorMessage={props.error} onRetry={onRetry}/>
           :
           <RecyclerListView
+            scrollViewProps={{
+              refreshControl: (
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={[COLORS.activeColor]}
+                />
+              )
+            }}
             forceNonDeterministicRendering={true}
             rowRenderer={renderRow}
             dataProvider={dataProvider.cloneWithRows(props.data)}
